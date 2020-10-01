@@ -42,22 +42,6 @@ public class Viewport implements Serializable, Parcelable
     public Viewport() {
     }
 
-    public Northeast getNortheast() {
-        return northeast;
-    }
-
-    public void setNortheast(Northeast northeast) {
-        this.northeast = northeast;
-    }
-
-    public Southwest getSouthwest() {
-        return southwest;
-    }
-
-    public void setSouthwest(Southwest southwest) {
-        this.southwest = southwest;
-    }
-
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(northeast);
         dest.writeValue(southwest);
