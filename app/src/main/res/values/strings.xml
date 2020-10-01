@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Represent!</string>
+    <string name="zipCodeOption">Enter a ZIP Code</string>
+    <string name="streetAddressHint">Street Address</string>
+    <string name="cityHint">City</string>
+    <string name="stateHint">State</string>
+    <string name="zipCodeHint">ZIP Code</string>
+    <string name="noLocationQuestion">No particular location in mind?</string>
+    <string name="randomizeLocation"><u>Randomize Location</u></string>
+    <string name="welcomeQuestion">Where would you like to view the representatives?</string>
+    <string name="GeolocationBaseUrl">https://maps.googleapis.com/maps/api/geocode/</string>
+    <string name="api_key">AIzaSyAFjzXkERgRaPB2jIqzUDEt8PUvJJkmCZE</string>
+</resources>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".views.LocationActivity">
+    
+    <TextView
+        android:id="@+id/welcomeTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="64dp"
+        app:layout_constraintBottom_toTopOf="@id/welcomeQuestionTv"
+        android:gravity="center"
+        android:text="Welcome"
+        android:theme="@style/RobotoBoldText"
+        android:textColor="@color/black"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/welcomeQuestionTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/currentLocationBtn"
+        android:layout_marginBottom="56dp"
+        android:gravity="center"
+        android:text="@string/welcomeQuestion"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
+        android:id="@+id/currentLocationBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="@id/searchLocationBtn"
+        app:layout_constraintEnd_toEndOf="@id/searchLocationBtn"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Use Current Location"
+        android:textColor="@android:color/white"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:drawableStart="@drawable/ic_my_location_white_24dp"
+        android:textSize="18sp"
+        android:theme="@style/RobotoBoldText"
+        android:fontFamily="@font/roboto_bold"
+        android:background="@drawable/current_location_btn"
+        app:spinning_bar_width="6dp"
+        app:spinning_bar_color="@android:color/white"
+        app:spinning_bar_padding="6dp"/>
+
+    <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
+        android:id="@+id/searchLocationBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/currentLocationBtn"
+        android:text="Search for a  Location"
+        android:textColor="@android:color/white"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:drawableStart="@drawable/ic_search_white_24dp"
+        android:textSize="18sp"
+        android:theme="@style/RobotoBoldText"
+        android:drawablePadding="8dp"
+        android:fontFamily="@font/roboto_bold"
+        android:background="@drawable/search_location_btn"/>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/noLocationQuestion"
+            android:textColor="@color/colorSecondaryText"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="@string/randomizeLocation"
+            android:textSize="18sp"
+            android:textColor="@color/independentPurple"/>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

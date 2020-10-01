@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+
+        <View
+            android:id="@+id/zipCodeBg"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="360dp"
+            android:layout_marginEnd="40dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/addressBg"
+            android:background="@drawable/zipcode_background">
+
+        </View>
+
+        <View
+            android:id="@+id/addressBg"
+            android:layout_width="0dp"
+            android:layout_height="360dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/address_background"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/zipCodeBg"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
+
+        </View>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/zipCodeLabelTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="24dp"
+        android:theme="@style/RobotoBoldText"
+        android:text="ZIP CODE"
+        android:textColor="@android:color/white"
+        android:textSize="18sp">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/addressLabelTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_bold"
+        android:text="ADDRESS"
+        android:theme="@style/RobotoBoldText"
+        android:textSize="18sp"
+        android:layout_marginTop="24dp"
+        android:textColor="@color/colorSecondaryText"
+        android:layout_alignRight="@id/locationCv">
+
+    </TextView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/locationCv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_centerHorizontal="true"
+        app:cardCornerRadius="40dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:visibility="invisible"
+            android:id="@+id/zipCodeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            app:boxStrokeColor="@color/text_input_layout_outline"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:theme="@style/OutlinedTextInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/zipCodeTv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/roboto"
+                android:hint="@string/zipCodeOption"
+                android:maxLength="5">
+
+            </com.google.android.material.textfield.TextInputEditText>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <include layout="@layout/content_address_input_texts"
+            android:id="@+id/addressInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginBottom="48dp"
+            android:layout_marginEnd="32dp"></include>
+
+    </androidx.cardview.widget.CardView>
+
+    <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
+        android:id="@+id/submitLocationBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go"
+        android:textColor="@android:color/white"
+        android:paddingStart="48dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingEnd="48dp"
+        android:textSize="28sp"
+        android:theme="@style/RobotoBoldText"
+        android:fontFamily="@font/roboto_bold"
+        android:background="@drawable/rounded_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="312dp"/>
+
+</RelativeLayout>

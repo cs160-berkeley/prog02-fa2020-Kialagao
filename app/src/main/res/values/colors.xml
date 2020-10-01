@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@android:color/black</color>
+    <color name="colorPrimaryDark">@android:color/black</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="colorSecondaryText">#7E7777</color>
+    <color name="colorDividerColor">#C4C4C4</color>
+    <color name="republicanRed">#B22234</color>
+    <color name="democratBlue">#3C3B6E</color>
+    <color name="independentPurple">#9C27B0</color>
+    <color name="textOrange">#FF9D38</color>
+    <color name="textGreen">#58F55F</color>
+    <color name="textYellow">#FFF176</color>
+    <color name="republicanRedWithAlpha">#CCB22234</color>
+    <color name="democraticBlueWithAlpha">#CC3C3B6E</color>
+    <color name="independentPurpleWithAlpha">#CC9C27B0</color>
+</resources>
