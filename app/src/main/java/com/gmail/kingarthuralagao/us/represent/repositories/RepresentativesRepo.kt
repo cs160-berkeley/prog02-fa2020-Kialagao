@@ -17,20 +17,27 @@ import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
 
+const val role1 : String = "legislatorLowerBody"
+const val role2 : String = "legislatorUpperBody"
+
 class RepresentativesRepo {
     private val TAG = javaClass.simpleName
+    val mutableLiveData = MutableLiveData<Result>()
 
     fun getResult(address : String, key : String) : MutableLiveData<Result> {
-        val mutableLiveData = MutableLiveData<Result>()
-        val role1 : String = "legislatorLowerBody"
-        val role2 : String = "legislatorUpperBody"
+        Log.i(TAG, "onGetResult")
 
+        callService(address, key)
         /*
         val BASE_URL = "https://civicinfo.googleapis.com/civicinfo/v2/"
         val downloadTask = DownloadTask()
         val formattedUrl = "${BASE_URL}representatives?address=${address}&roles=${role1}&roles=${role2}&key=${key}"
         val url = "https://civicinfo.googleapis.com/civicinfo/v2/representatives?address=35%20Castillo%20Street%20San%20Francisco%20California%2C%2094134&roles=legislatorUpperBody&roles=legislatorLowerBody&key=${key}"
         downloadTask.execute(formattedUrl)*/
+        return mutableLiveData
+    }
+
+    private fun callService(address : String, key : String) {
 
         val apiService = RepresentativesRetrofitClient.representativesApi
 
@@ -48,16 +55,31 @@ class RepresentativesRepo {
                 for (official in results.officials) {
                     Log.i(TAG, official.name)
                 }
+                Log.i(TAG, "onCallResponse")
             }
 
             override fun onFailure(call: Call<Result>, t: Throwable) {
                 Log.i("Error", t.message!!)
             }
         })
-        return mutableLiveData
     }
 }
 
+
+object RepresentativesRetrofitClient {
+    private val BASE_URL = "https://civicinfo.googleapis.com/civicinfo/v2/"
+    val gson = GsonBuilder().setLenient().create()
+
+    val representativesApi : Representatives by lazy{
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+        retrofit.create(Representatives::class.java)
+    }
+}
+
+/*
 class DownloadTask : AsyncTask<String, Void, String>() {
     override fun doInBackground(vararg params: String): String {
         var result = ""
@@ -88,17 +110,4 @@ class DownloadTask : AsyncTask<String, Void, String>() {
 
         Log.i("RepresentativeRepo", result)
     }
-}
-
-object RepresentativesRetrofitClient {
-    private val BASE_URL = "https://civicinfo.googleapis.com/civicinfo/v2/"
-    val gson = GsonBuilder().setLenient().create()
-
-    val representativesApi : Representatives by lazy{
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
-        retrofit.create(Representatives::class.java)
-    }
-}
+}*/

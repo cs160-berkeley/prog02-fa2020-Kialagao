@@ -20,22 +20,19 @@ class LocationActivityViewModel : ViewModel() {
         RepresentativesRepo()
     }
 
-    var representativesMutableLiveData = MutableLiveData<Result>()
-    val geolocationMutableLiveData = MutableLiveData<List<GeolocationResult>>()
+    var representativesMutableLiveData = representativesRepo.mutableLiveData
+    var geolocationMutableLiveData  = geolocationRepo.mutableLiveData
 
     fun fetchResults(lat : Double, lng : Double, key : String) {
+        Log.i(TAG, "onFetchResults")
         val formattedQuery = "${lat},${lng}"
-        val results = geolocationRepo.getResults(formattedQuery, key).value
 
-        geolocationMutableLiveData.value = geolocationRepo.getResults(formattedQuery, key).value
-    }
-
-    fun getAddresses() : LiveData<List<GeolocationResult>> {
-        return geolocationMutableLiveData
+        geolocationRepo.getResults(formattedQuery, key)
     }
 
     fun fetchRepresentatives(address : String, key : String) {
         val formattedAddress = address.replace("\\s".toRegex(), "+")
-        representativesMutableLiveData.postValue(representativesRepo.getResult(formattedAddress, key).value)
+
+        representativesRepo.getResult(formattedAddress, key)
     }
 }

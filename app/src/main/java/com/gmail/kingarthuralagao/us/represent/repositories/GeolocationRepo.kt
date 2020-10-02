@@ -16,12 +16,11 @@ import java.util.*
 class GeolocationRepo {
     private val TAG = javaClass.simpleName
     var resultList: MutableList<GeolocationResult> = mutableListOf()
+    val mutableLiveData = MutableLiveData<List<GeolocationResult>>()
 
     fun getResults(formattedQuery: String, key: String) : MutableLiveData<List<GeolocationResult>> {
         callService(formattedQuery, key)
 
-        val mutableLiveData = MutableLiveData<List<GeolocationResult>>()
-        mutableLiveData.value = resultList
         return mutableLiveData
     }
 
@@ -39,7 +38,9 @@ class GeolocationRepo {
                 resultList.clear()
                 for (result in response.body()!!.geolocationResults) {
                     resultList.add(result)
+                    Log.i(TAG, result.formattedAddress)
                 }
+                mutableLiveData.value = resultList
             }
 
             override fun onFailure(call: Call<Results>, t: Throwable) {
@@ -48,8 +49,6 @@ class GeolocationRepo {
         })
     }
 }
-
-
 
 object RetrofitClient {
     private val BASE_URL = "https://maps.googleapis.com/maps/api/geocode/"
