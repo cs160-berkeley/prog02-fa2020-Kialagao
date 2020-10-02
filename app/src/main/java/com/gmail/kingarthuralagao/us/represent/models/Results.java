@@ -13,7 +13,7 @@ public class Results implements Serializable, Parcelable
 
     @SerializedName("results")
     @Expose
-    private List<Result> results = null;
+    private List<GeolocationResult> geolocationResults = null;
     public final static Parcelable.Creator<Results> CREATOR = new Creator<Results>() {
 
 
@@ -33,22 +33,22 @@ public class Results implements Serializable, Parcelable
     private final static long serialVersionUID = 5501885994971779204L;
 
     protected Results(Parcel in) {
-        in.readList(this.results, (com.gmail.kingarthuralagao.us.represent.models.Result.class.getClassLoader()));
+        in.readList(this.geolocationResults, (GeolocationResult.class.getClassLoader()));
     }
 
     public Results() {
     }
 
-    public List<Result> getResults() {
-        return results;
+    public List<GeolocationResult> getGeolocationResults() {
+        return geolocationResults;
     }
 
-    public void setResults(List<Result> results) {
-        this.results = results;
+    public void setGeolocationResults(List<GeolocationResult> geolocationResults) {
+        this.geolocationResults = geolocationResults;
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeList(results);
+        dest.writeList(geolocationResults);
     }
 
     public int describeContents() {

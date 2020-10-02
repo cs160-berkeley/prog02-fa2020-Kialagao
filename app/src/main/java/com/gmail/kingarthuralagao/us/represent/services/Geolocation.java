@@ -1,8 +1,6 @@
-package com.gmail.kingarthuralagao.us.represent.api;
+package com.gmail.kingarthuralagao.us.represent.services;
 
 import com.gmail.kingarthuralagao.us.represent.models.Results;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

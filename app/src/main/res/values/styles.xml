@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -24,6 +24,13 @@
     <style name="MerriweatherTitleText">
         <item name="fontFamily">@font/merriweather</item>
         <item name="android:fontFamily">@font/merriweather</item>
+    </style>
+
+    <style name="CurrentLocationBtn" parent="Widget.MaterialComponents.Button">
+        <item name="fontFamily">@font/roboto</item>
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:textStyle">bold</item>
+        <item name="background">@drawable/current_location_btn</item>
     </style>
 
 </resources>

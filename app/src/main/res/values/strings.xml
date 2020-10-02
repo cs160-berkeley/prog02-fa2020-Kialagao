@@ -10,4 +10,6 @@
     <string name="welcomeQuestion">Where would you like to view the representatives?</string>
     <string name="GeolocationBaseUrl">https://maps.googleapis.com/maps/api/geocode/</string>
     <string name="api_key">AIzaSyAFjzXkERgRaPB2jIqzUDEt8PUvJJkmCZE</string>
+    <string name="loading">Loading</string>
+    <string name="submit">Use Current Location</string>
 </resources>

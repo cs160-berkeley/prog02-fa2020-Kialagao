@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.util.List;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.os.Parcelable.Creator;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Result implements Serializable, Parcelable
+public class GeolocationResult implements Serializable, Parcelable
 {
     @SerializedName("address_components")
     @Expose
@@ -25,29 +25,29 @@ public class Result implements Serializable, Parcelable
     @SerializedName("types")
     @Expose
     private List<String> types = null;
-    public final static Parcelable.Creator<Result> CREATOR = new Creator<Result>() {
+    public final static Parcelable.Creator<GeolocationResult> CREATOR = new Creator<GeolocationResult>() {
         @SuppressWarnings({
                 "unchecked"
         })
-        public Result createFromParcel(Parcel in) {
-            return new Result(in);
+        public GeolocationResult createFromParcel(Parcel in) {
+            return new GeolocationResult(in);
         }
 
-        public Result[] newArray(int size) {
-            return (new Result[size]);
+        public GeolocationResult[] newArray(int size) {
+            return (new GeolocationResult[size]);
         }
     };
     private final static long serialVersionUID = -2575614696178070255L;
 
-    protected Result(Parcel in) {
-        in.readList(this.addressComponents, (com.gmail.kingarthuralagao.us.represent.models.AddressComponent.class.getClassLoader()));
+    protected GeolocationResult(Parcel in) {
+        in.readList(this.addressComponents, (AddressComponent.class.getClassLoader()));
         this.formattedAddress = ((String) in.readValue((String.class.getClassLoader())));
         this.geometry = ((Geometry) in.readValue((Geometry.class.getClassLoader())));
         this.placeId = ((String) in.readValue((String.class.getClassLoader())));
         in.readList(this.types, (java.lang.String.class.getClassLoader()));
     }
 
-    public Result() {
+    public GeolocationResult() {
     }
 
     public String getFormattedAddress() {
