@@ -10,6 +10,5 @@ public interface Geolocation {
 
     @GET("json")
     Call<Results> getResults(@Query("latlng") String latlng,
-                             @Query("result_type") String type,
                              @Query("key") String api_key);
 }

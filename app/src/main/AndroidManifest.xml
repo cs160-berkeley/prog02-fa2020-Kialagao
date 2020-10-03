@@ -13,8 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".views.GalitAko"></activity>
-        <activity android:name=".views.RepresentativesActivity"></activity>
+        <activity android:name=".views.MasterActivity"></activity>
+        <activity android:name=".views.RepresentativesActivity" />
         <activity android:name=".views.LocationActivity" />
         <activity android:name=".views.MainActivity">
             <intent-filter>

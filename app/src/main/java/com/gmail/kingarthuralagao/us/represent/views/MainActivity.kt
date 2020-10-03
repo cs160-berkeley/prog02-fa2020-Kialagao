@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        var intent = Intent(this, LocationActivity::class.java)
+        var intent = Intent(this, MasterActivity::class.java)
         startActivity(intent)
     }
 }

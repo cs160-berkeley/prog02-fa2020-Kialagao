@@ -11,7 +11,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.*
 
 class GeolocationRepo {
     private val TAG = javaClass.simpleName
@@ -27,7 +26,7 @@ class GeolocationRepo {
     private fun callService(formattedQuery: String, key: String) {
         val apiService = RetrofitClient.geolocationApi
 
-        apiService.getResults(formattedQuery, "street_address", key).enqueue(object :
+        apiService.getResults(formattedQuery, key).enqueue(object :
             Callback<Results> {
             override fun onResponse(call: Call<Results>, response: Response<Results>) {
                 if (!response.isSuccessful) { //Error

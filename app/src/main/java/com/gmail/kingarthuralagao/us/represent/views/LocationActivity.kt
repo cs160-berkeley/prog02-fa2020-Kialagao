@@ -2,6 +2,7 @@ package com.gmail.kingarthuralagao.us.represent.views
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -12,6 +13,7 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -22,7 +24,6 @@ import com.gmail.kingarthuralagao.us.represent.databinding.ActivityLocationBindi
 import com.gmail.kingarthuralagao.us.represent.models.GeolocationResult
 import com.gmail.kingarthuralagao.us.represent.models.representatives.Result
 import com.gmail.kingarthuralagao.us.represent.viewmodels.LocationActivityViewModel
-
 
 class LocationActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -130,7 +131,7 @@ class LocationActivity : AppCompatActivity(), View.OnClickListener {
         viewModel.fetchResults(lat, lng, resources.getString(R.string.api_key))
     }
 
-    val geolocationObserver = Observer<List<GeolocationResult>> {
+    private val geolocationObserver = Observer<List<GeolocationResult>> {
         Log.i(TAG, "onObserver")
         if (it != null && it.isNotEmpty()) {
             for (result in it) {
@@ -141,7 +142,7 @@ class LocationActivity : AppCompatActivity(), View.OnClickListener {
     }
 
 
-    val representativesObserver = Observer<Result> {
+    private val representativesObserver = Observer<Result> {
         if (it != null) {
             for (official in it.officials) {
                 Log.i(TAG, official.name)
@@ -149,21 +150,25 @@ class LocationActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         binding.currentLocationBtn.doneLoadingAnimation(R.color.colorAccent, doneImage)
-        object : CountDownTimer(1000, 1000) {
+        object : CountDownTimer(2000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
+                Toast.makeText(applicationContext, "millis" + millisUntilFinished.toString(), Toast.LENGTH_SHORT).show()
+                if (millisUntilFinished <= 1000L) {
+                    binding.currentLocationBtn.revertAnimation {
+                        binding.currentLocationBtn.background = resources.getDrawable(
+                            R.drawable.current_location_btn,
+                            null
+                        )
+                    }
+                }
             }
 
             override fun onFinish() {
-                binding.currentLocationBtn.revertAnimation {
-                    binding.currentLocationBtn.background = resources.getDrawable(
-                        R.drawable.current_location_btn,
-                        null
-                    )
-                }
+                val intent = Intent(applicationContext, RepresentativesActivity::class.java)
+                startActivity(intent)
             }
         }.start()
     }
-
 }
 
 

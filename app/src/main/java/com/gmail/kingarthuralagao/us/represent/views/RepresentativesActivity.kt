@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.gmail.kingarthuralagao.us.represent.R
 import com.gmail.kingarthuralagao.us.represent.adapters.RepresentativesRecyclerViewAdapter
 import com.gmail.kingarthuralagao.us.represent.adapters.getScreenHeight
+import com.gmail.kingarthuralagao.us.represent.databinding.ActivityRepresentativesBinding
+import com.gmail.kingarthuralagao.us.represent.viewmodels.LocationActivityViewModel
 import kotlinx.android.synthetic.main.activity_representatives.*
 
 
@@ -37,32 +40,34 @@ class RepresentativesActivity : AppCompatActivity() {
             "Democrat"
         )
     )
+
+    private lateinit var binding : ActivityRepresentativesBinding
+    private lateinit var viewModel : LocationActivityViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_representatives)
+
+        binding = ActivityRepresentativesBinding.inflate(layoutInflater)
+        viewModel = ViewModelProvider(this).get(LocationActivityViewModel::class.java)
+        setContentView(binding.root)
 
         setSupportActionBar(repToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         val viewManager = LinearLayoutManager(this)
         val viewAdapter = RepresentativesRecyclerViewAdapter(myDataset)
-
         val itemDecorator = VerticalSpaceItemDecoration(96)
 
-        findViewById<RecyclerView>(R.id.representativesRv).apply {
-
+        binding.representativesRv.apply {
             addItemDecoration(itemDecorator)
-
-            // use a linear layout manager
             layoutManager = viewManager
-
-            // specify an viewAdapter (see also next example)
             adapter = viewAdapter
         }
 
         Toast.makeText(this, "Height: ${getScreenHeight()}", Toast.LENGTH_SHORT).show()
     }
 }
+
 class VerticalSpaceItemDecoration(private val verticalSpaceHeight: Int) : ItemDecoration() {
     override fun getItemOffsets(
         outRect: Rect,
