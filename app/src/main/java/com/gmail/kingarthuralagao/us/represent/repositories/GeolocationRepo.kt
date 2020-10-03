@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.gmail.kingarthuralagao.us.represent.models.GeolocationResult
 import com.gmail.kingarthuralagao.us.represent.models.Results
-import com.gmail.kingarthuralagao.us.represent.services.Geolocation
+import com.gmail.kingarthuralagao.us.represent.services.IGeolocation
 import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Callback
@@ -53,12 +53,12 @@ object RetrofitClient {
     private val BASE_URL = "https://maps.googleapis.com/maps/api/geocode/"
     val gson = GsonBuilder().setLenient().create()
 
-    val geolocationApi : Geolocation by lazy{
+    val geolocationApi : IGeolocation by lazy{
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
-        retrofit.create(Geolocation::class.java)
+        retrofit.create(IGeolocation::class.java)
     }
 }
 

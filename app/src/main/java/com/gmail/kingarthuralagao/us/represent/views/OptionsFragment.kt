@@ -17,11 +17,11 @@ class OptionsFragment : Fragment(), View.OnClickListener {
 
     private val TAG = javaClass.simpleName
     lateinit var binding : FragmentOptionsBinding
-    private val doneImage : Bitmap by lazy {
+    val doneImage : Bitmap by lazy {
         BitmapFactory.decodeResource(resources, R.drawable.ic_done_white_48dp)
     }
 
-    private var onButtonClick : OnButtonClick? = null
+    private var onButtonClick : IButtonClickListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +40,7 @@ class OptionsFragment : Fragment(), View.OnClickListener {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnButtonClick) {
+        if (context is IButtonClickListener) {
             onButtonClick = context
         } else {
             throw RuntimeException("Must implement")
@@ -61,26 +61,8 @@ class OptionsFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    interface OnButtonClick {
+    interface IButtonClickListener {
         fun onCurrentLocationBtnClick()
         fun onSearchLocationBtnClick()
-    }
-
-    fun onDataFetched() {
-        binding.currentLocationBtn.doneLoadingAnimation(R.color.colorAccent, doneImage)
-        object : CountDownTimer(2000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                if (millisUntilFinished <= 1000L) {
-                    binding.currentLocationBtn.revertAnimation {
-                        binding.currentLocationBtn.background = resources.getDrawable(
-                            R.drawable.current_location_btn,
-                            null
-                        )
-                    }
-                }
-            }
-
-            override fun onFinish() {}
-        }.start()
     }
 }

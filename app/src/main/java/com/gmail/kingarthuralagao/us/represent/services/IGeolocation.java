@@ -6,7 +6,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-public interface Geolocation {
+public interface IGeolocation {
 
     @GET("json")
     Call<Results> getResults(@Query("latlng") String latlng,

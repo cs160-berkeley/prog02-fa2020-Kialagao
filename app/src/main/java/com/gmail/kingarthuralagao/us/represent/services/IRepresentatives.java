@@ -6,7 +6,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-public interface Representatives {
+public interface IRepresentatives {
     @GET("representatives")
     Call<Result> getResults(@Query("address") String address,
                             @Query("roles") String role1,

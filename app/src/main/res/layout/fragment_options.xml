@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".views.LocationActivity">
+    android:layout_height="match_parent">
     
     <TextView
         android:id="@+id/welcomeTv"
@@ -53,9 +52,10 @@
         app:spinning_bar_width="6dp"
         app:spinning_bar_color="@android:color/white"
         app:spinning_bar_padding="6dp"
+        app:initialCornerAngle="32dp"
         app:finalCornerAngle="32dp"/>
 
-    <Button
+    <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
         android:id="@+id/searchLocationBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

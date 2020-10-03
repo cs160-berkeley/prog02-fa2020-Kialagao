@@ -1,7 +1,8 @@
-<androidx.cardview.widget.CardView android:layout_width="match_parent"
+<com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardCornerRadius="16dp"
     app:cardElevation="8dp"
+    android:clickable="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -34,7 +35,7 @@
             app:layout_constraintStart_toEndOf="@id/candidateImage"
             android:text="Candidate Namesdasdsds"
             android:gravity="center_vertical"
-            android:textSize="21sp"
+            android:textSize="18sp"
             android:textColor="@color/black"
             android:textStyle="bold"/>
         <TextView
@@ -67,4 +68,4 @@
             android:textSize="18sp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

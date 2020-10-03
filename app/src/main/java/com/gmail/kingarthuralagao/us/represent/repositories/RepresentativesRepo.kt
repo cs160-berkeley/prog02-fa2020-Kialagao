@@ -2,7 +2,8 @@ package com.gmail.kingarthuralagao.us.represent.repositories
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.gmail.kingarthuralagao.us.represent.services.Representatives
+import com.gmail.kingarthuralagao.us.represent.models.representatives.NormalizedInput
+import com.gmail.kingarthuralagao.us.represent.services.IRepresentatives
 import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Callback
@@ -16,9 +17,11 @@ const val role2 : String = "legislatorUpperBody"
 
 class RepresentativesRepo {
     private val TAG = javaClass.simpleName
-    val mutableLiveData = MutableLiveData<Result>()
+    val mutableLiveData = MutableLiveData<MutableList<MutableMap<String, String>>>()
+    val representativesList = mutableListOf<MutableMap<String, String>>()
+    val addressInput = MutableLiveData<String>()
 
-    fun getResult(address : String, key : String) : MutableLiveData<Result> {
+    fun getResult(address : String, key : String) : MutableLiveData<MutableList<MutableMap<String, String>> > {
         Log.i(TAG, "onGetResult")
 
         callService(address, key)
@@ -37,12 +40,11 @@ class RepresentativesRepo {
                     return
                 }
 
-                mutableLiveData.value = response.body()
+                getRepresentativesInfo(response.body()!!)
+                addressInput.value = buildAddress(response.body()!!.normalizedInput)
+                mutableLiveData.value = representativesList
+                addressInput.value = buildAddress(response.body()!!.normalizedInput)
 
-                val results = response.body()!!
-                for (official in results.officials) {
-                    Log.i(TAG, official.name)
-                }
                 Log.i(TAG, "onCallResponse")
             }
 
@@ -51,6 +53,29 @@ class RepresentativesRepo {
             }
         })
     }
+
+    fun getRepresentativesInfo(result : Result) {
+
+        val offices = result.offices
+        representativesList.clear()
+        for (officeIndex in 0 until offices.size) {
+            if (offices[officeIndex].name == "U.S. Senator" || offices[officeIndex].name == "U.S. Representative") {
+                for (officialIndex in offices[officeIndex].officialIndices) {
+                    val m = mutableMapOf<String, String>()
+                    m["office"] = offices[officeIndex].name
+                    val official = result.officials[officialIndex]
+                    m["name"] = official.name
+                    m["party"] = official.party
+                    m["photoUrl"] = official.photoUrl ?: ""
+                    representativesList.add(m)
+                }
+            }
+        }
+    }
+
+    fun buildAddress(input : NormalizedInput) : String {
+        return "${input.line1} ${input.city}, ${input.state} ${input.zip}"
+    }
 }
 
 
@@ -58,12 +83,12 @@ object RepresentativesRetrofitClient {
     private val BASE_URL = "https://civicinfo.googleapis.com/civicinfo/v2/"
     val gson = GsonBuilder().setLenient().create()
 
-    val representativesApi : Representatives by lazy{
+    val representativesApi : IRepresentatives by lazy{
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
-        retrofit.create(Representatives::class.java)
+        retrofit.create(IRepresentatives::class.java)
     }
 }
 

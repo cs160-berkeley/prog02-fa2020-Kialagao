@@ -54,6 +54,22 @@ public class GeolocationResult implements Serializable, Parcelable
         return formattedAddress;
     }
 
+    public List<AddressComponent> getAddressComponents() {
+        return addressComponents;
+    }
+
+    public Geometry getGeometry() {
+        return geometry;
+    }
+
+    public String getPlaceId() {
+        return placeId;
+    }
+
+    public List<String> getTypes() {
+        return types;
+    }
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeList(addressComponents);
         dest.writeValue(formattedAddress);

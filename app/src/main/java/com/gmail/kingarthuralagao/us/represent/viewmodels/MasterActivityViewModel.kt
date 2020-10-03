@@ -4,14 +4,15 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.gmail.kingarthuralagao.us.represent.adapters.RepresentativesRecyclerViewAdapter
 import com.gmail.kingarthuralagao.us.represent.models.GeolocationResult
 import com.gmail.kingarthuralagao.us.represent.models.representatives.Result
 import com.gmail.kingarthuralagao.us.represent.repositories.GeolocationRepo
 import com.gmail.kingarthuralagao.us.represent.repositories.RepresentativesRepo
 
-
 class MasterActivityViewModel : ViewModel() {
     private val TAG = javaClass.simpleName
+
     private val geolocationRepo by lazy {
         GeolocationRepo()
     }
@@ -22,6 +23,7 @@ class MasterActivityViewModel : ViewModel() {
 
     var representativesMutableLiveData = representativesRepo.mutableLiveData
     var geolocationMutableLiveData  = geolocationRepo.mutableLiveData
+    var inputAddress = ""
 
     fun fetchResults(lat : Double, lng : Double, key : String) {
         Log.i(TAG, "onFetchResults")
@@ -32,7 +34,7 @@ class MasterActivityViewModel : ViewModel() {
 
     fun fetchRepresentatives(address : String, key : String) {
         val formattedAddress = address.replace("\\s".toRegex(), "+")
-
+        inputAddress = address
         representativesRepo.getResult(formattedAddress, key)
     }
 }
