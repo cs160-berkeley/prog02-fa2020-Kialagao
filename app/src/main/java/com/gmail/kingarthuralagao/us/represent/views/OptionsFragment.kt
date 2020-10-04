@@ -17,9 +17,6 @@ class OptionsFragment : Fragment(), View.OnClickListener {
 
     private val TAG = javaClass.simpleName
     lateinit var binding : FragmentOptionsBinding
-    val doneImage : Bitmap by lazy {
-        BitmapFactory.decodeResource(resources, R.drawable.ic_done_white_48dp)
-    }
 
     private var onButtonClick : IButtonClickListener? = null
 
@@ -36,6 +33,7 @@ class OptionsFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.currentLocationBtn.setOnClickListener(this)
+        binding.searchLocationBtn.setOnClickListener(this)
     }
 
     override fun onAttach(context: Context) {
@@ -57,6 +55,10 @@ class OptionsFragment : Fragment(), View.OnClickListener {
             binding.currentLocationBtn.id -> {
                 binding.currentLocationBtn.startAnimation()
                 onButtonClick!!.onCurrentLocationBtnClick()
+            }
+            else -> {
+                binding.searchLocationBtn.startAnimation()
+                onButtonClick!!.onSearchLocationBtnClick()
             }
         }
     }

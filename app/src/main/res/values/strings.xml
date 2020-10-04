@@ -14,4 +14,9 @@
     <string name="submit">Use Current Location</string>
     <string name="searchIconTag">search</string>
     <string name="myLocationIconTag">myLocation</string>
+    <string name="phone">phone</string>
+    <string name="website">website</string>
+    <string name="twitter">twitter</string>
+    <string name="youtube">youtube</string>
+
 </resources>

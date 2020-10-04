@@ -67,6 +67,12 @@ class RepresentativesRepo {
                     m["name"] = official.name
                     m["party"] = official.party
                     m["photoUrl"] = official.photoUrl ?: ""
+                    m["phone"] = official.phones[0] ?: ""
+                    m["website"] = official.urls[0] ?: ""
+                    for (channel in official.channels) {
+                        if (channel.type == "Twitter") { m["twitter"] = channel.id }
+                        if (channel.type == "YouTube") { m["youtube"] = channel.id }
+                    }
                     representativesList.add(m)
                 }
             }

@@ -1,27 +1,44 @@
 package com.gmail.kingarthuralagao.us.represent.views
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
+import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.gmail.kingarthuralagao.us.represent.R
 import com.gmail.kingarthuralagao.us.represent.adapters.RepresentativesRecyclerViewAdapter
 import com.gmail.kingarthuralagao.us.represent.models.GeolocationResult
 import com.gmail.kingarthuralagao.us.represent.viewmodels.MasterActivityViewModel
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.TypeFilter
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.AutocompleteActivity
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_master.*
+import kotlin.properties.Delegates
 
-class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener, RepresentativesFragment.IRepresentativesFragmentListener {
+const val AUTOCOMPLETE_REQUEST_CODE = 2
+const val PERMISSION_REQUEST_CODE = 1
+class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener,
+    RepresentativesFragment.IRepresentativesFragmentListener, RepresentativeInfoDialog.IOnLinkClickListener {
 
     private val optionsFragment : OptionsFragment by lazy {
         OptionsFragment()
@@ -29,7 +46,18 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
 
     private val representativesFragment : RepresentativesFragment by lazy {
         Log.i(TAG, "creatingRepFragment")
-        RepresentativesFragment.newInstance(representativesRecyclerViewAdapter, masterActivityViewModel.inputAddress)
+        RepresentativesFragment.newInstance(
+            representativesRecyclerViewAdapter,
+            masterActivityViewModel.inputAddress
+        )
+    }
+
+    val doneImage : Bitmap by lazy {
+        BitmapFactory.decodeResource(resources, R.drawable.ic_done_white_48dp)
+    }
+
+    val errorImage : Bitmap by lazy {
+        BitmapFactory.decodeResource(resources, R.drawable.ic_close_white_48dp)
     }
 
     private val TAG = javaClass.simpleName
@@ -37,7 +65,7 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
     private lateinit var locationListener: LocationListener
     lateinit var masterActivityViewModel : MasterActivityViewModel
     lateinit var representativesRecyclerViewAdapter: RepresentativesRecyclerViewAdapter
-    private val representativesList = mutableListOf<MutableMap<String, String>>()
+    private var representativePosition by Delegates.notNull<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,14 +77,23 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
         locationListener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
                 Log.i(TAG, "onLocationChanged")
-                masterActivityViewModel.fetchResults(location.latitude, location.longitude, resources.getString(R.string.api_key))
+                masterActivityViewModel.fetchResults(
+                    location.latitude, location.longitude, resources.getString(
+                        R.string.api_key
+                    )
+                )
                 locationManager.removeUpdates(this)
             }
         }
 
         masterActivityViewModel.geolocationMutableLiveData.observe(this, geolocationObserver)
-        masterActivityViewModel.representativesMutableLiveData.observe(this, representativesObserver)
-        supportFragmentManager.beginTransaction().add(fragmentContainer.id, optionsFragment).commit()
+        masterActivityViewModel.representativesMutableLiveData.observe(
+            this,
+            representativesObserver
+        )
+        if (supportFragmentManager.findFragmentByTag("options") == null) {
+            supportFragmentManager.beginTransaction().add(fragmentContainer.id, optionsFragment).commit()
+        }
     }
 
 
@@ -72,7 +109,53 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
                 }
             }
 
-            masterActivityViewModel.fetchRepresentatives(address, resources.getString(R.string.api_key))
+            masterActivityViewModel.fetchRepresentatives(
+                address,
+                resources.getString(R.string.api_key)
+            )
+        } else {
+
+            /*
+            if (!optionsFragment.binding.currentLocationBtn.isClickable) {
+                optionsFragment.binding.currentLocationBtn.doneLoadingAnimation(R.color.colorAccent,
+                    BitmapFactory.decodeResource(resources, R.drawable.ic_error))
+            } else {
+                optionsFragment.binding.searchLocationBtn.doneLoadingAnimation(
+                    R.color.colorAccent,
+                    BitmapFactory.decodeResource(resources, R.drawable.ic_error)
+                )
+            }*/
+
+            optionsFragment.binding.currentLocationBtn.doneLoadingAnimation(R.color.colorAccent,
+                BitmapFactory.decodeResource(resources, R.drawable.ic_error))
+            Toasty.error(this, "Invalid Location", Toast.LENGTH_SHORT, true).show()
+
+            object : CountDownTimer(2000, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    if (millisUntilFinished <= 1000L) {
+
+                        if (!optionsFragment.binding.currentLocationBtn.isClickable) {
+                            optionsFragment.binding.currentLocationBtn.revertAnimation {
+                                optionsFragment.binding.currentLocationBtn.background = resources.getDrawable(
+                                    R.drawable.current_location_btn,
+                                    null
+                                )
+                            }
+                        } else {
+                            optionsFragment.binding.searchLocationBtn.revertAnimation {
+                                optionsFragment.binding.searchLocationBtn.background = resources.getDrawable(
+                                    R.drawable.current_location_btn,
+                                    null
+                                )
+                            }
+                        }
+                    }
+                }
+
+                override fun onFinish() {
+
+                }
+            }.start()
         }
     }
 
@@ -85,32 +168,56 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
 
             if (optionsFragment.isVisible) {
                 representativesRecyclerViewAdapter = RepresentativesRecyclerViewAdapter(it)
-                optionsFragment.binding.currentLocationBtn.doneLoadingAnimation(
-                    R.color.colorAccent,
-                    optionsFragment.doneImage
-                )
+
+                if (!optionsFragment.binding.currentLocationBtn.isClickable) {
+                    optionsFragment.binding.currentLocationBtn.doneLoadingAnimation(
+                        R.color.colorAccent,
+                        doneImage
+                    )
+                } else {
+                    optionsFragment.binding.searchLocationBtn.doneLoadingAnimation(
+                        R.color.colorAccent,
+                        doneImage
+                    )
+                }
+
+
                 object : CountDownTimer(2000, 1000) {
                     override fun onTick(millisUntilFinished: Long) {
                         if (millisUntilFinished <= 1000L) {
-                            optionsFragment.binding.currentLocationBtn.revertAnimation {
-                                optionsFragment.binding.currentLocationBtn.background = resources.getDrawable(R.drawable.current_location_btn, null)
+
+                            if (!optionsFragment.binding.currentLocationBtn.isClickable) {
+                                optionsFragment.binding.currentLocationBtn.revertAnimation {
+                                    optionsFragment.binding.currentLocationBtn.background = resources.getDrawable(
+                                        R.drawable.current_location_btn,
+                                        null
+                                    )
+                                }
+                            } else {
+                                optionsFragment.binding.searchLocationBtn.revertAnimation {
+                                    optionsFragment.binding.searchLocationBtn.background = resources.getDrawable(
+                                        R.drawable.current_location_btn,
+                                        null
+                                    )
+                                }
                             }
                         }
                     }
 
                     override fun onFinish() {
-                        if (supportFragmentManager.findFragmentByTag("options") == null) {
+                        if (supportFragmentManager.findFragmentByTag("representatives") == null) {
                             supportFragmentManager.beginTransaction()
-                                .add(fragmentContainer.id, representativesFragment, "options")
-                                .hide(optionsFragment).commit()
-                        } else {
-                            supportFragmentManager.beginTransaction().hide(optionsFragment).commit()
+                                .setCustomAnimations(R.anim.enter_right_to_left, R.anim.exit_right_to_left, R.anim.enter_left_to_right, R.anim.exit_left_to_right)
+                                .replace(fragmentContainer.id, representativesFragment,"representatives")
+                                .addToBackStack(null)
+                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                .commit()
                         }
                     }
                 }.start()
             } else {
                 representativesRecyclerViewAdapter.setData(it)
-                representativesFragment.binding.addressTv.text = masterActivityViewModel.inputAddress
+                representativesFragment.representativesBinding.addressTv.text = masterActivityViewModel.inputAddress
             }
         }
     }
@@ -125,7 +232,7 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER, 5000,
+                    LocationManager.GPS_PROVIDER, 0,
                     0F,
                     locationListener
                 )
@@ -133,15 +240,68 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    data?.let {
+                        val place = Autocomplete.getPlaceFromIntent(data)
+                        Toast.makeText(this, "Place:  ${place.address}, ${place.name}", Toast.LENGTH_LONG).show()
+                        masterActivityViewModel.fetchRepresentatives(
+                            place.address.toString(),
+                            resources.getString(R.string.api_key)
+                        )
+                    }
+                }
+                AutocompleteActivity.RESULT_ERROR -> {
+                    // TODO: Handle the error.
+                    data?.let {
+                        val status = Autocomplete.getStatusFromIntent(data)
+                        Log.i(TAG, status.statusMessage.toString())
+                    }
+                }
+                Activity.RESULT_CANCELED -> {
+                    // The user canceled the operation.
+                }
+            }
+            return
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     private fun getUserLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.i(TAG, "onClick")
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0F, locationListener)
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                0,
+                0F,
+                locationListener
+            )
         } else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSION_REQUEST_CODE
+            )
         }
     }
 
+    private fun initializePlaceAutocomplete() {
+        Places.initialize(applicationContext, resources.getString(R.string.api_key))
+
+        // Create a new PlacesClient instance
+        val placesClient = Places.createClient(this)
+        // Set the fields to specify which types of place data to
+        // return after the user has made a selection.
+        val fields = listOf(Place.Field.NAME, Place.Field.ADDRESS)
+
+        // Start the autocomplete intent.
+        val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+            .setCountry("US")
+            .build(this)
+        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE)
+    }
 
     // *************************************** Communication With Fragments ***************************************** //
     override fun onCurrentLocationBtnClick() {
@@ -149,18 +309,80 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
     }
 
     override fun onSearchLocationBtnClick() {
-        //
+        initializePlaceAutocomplete()
     }
 
     override fun onCardViewItemClick(position: Int) {
-        TODO("Not yet implemented")
+        representativePosition = position
+        val representativeInfoDialog = RepresentativeInfoDialog.newInstance(
+            masterActivityViewModel.representativesMutableLiveData.value?.get(
+                position
+            ) as HashMap
+        )
+        representativeInfoDialog.show(supportFragmentManager, "")
     }
 
     override fun onIconClick(tag: String) {
         if (tag == resources.getString(R.string.myLocationIconTag)) {
             getUserLocation()
         } else {
-            Toast.makeText(this, "CLicked", Toast.LENGTH_SHORT).show()
+            initializePlaceAutocomplete()
+        }
+    }
+
+    override fun onLinkClick(tag: String, link: String) {
+        Toast.makeText(this, tag, Toast.LENGTH_LONG).show()
+        when (tag) {
+            resources.getString(R.string.website) -> {
+                val browserIntent = Intent(
+                    Intent.ACTION_VIEW, Uri.parse(
+                        masterActivityViewModel.representativesMutableLiveData.value?.get(
+                            representativePosition
+                        )
+                            ?.get("website")
+                    )
+                )
+                startActivity(browserIntent)
+            }
+
+            resources.getString(R.string.phone) -> {
+                val u = Uri.parse("tel:$link")
+                val i = Intent(Intent.ACTION_DIAL, u)
+
+                try {
+                    startActivity(i)
+                } catch (s: SecurityException) {
+                    Toast.makeText(this, s.message, Toast.LENGTH_LONG)
+                        .show()
+                }
+            }
+
+            resources.getString(R.string.twitter) -> {
+                try {
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://twitter.com/${link}")
+                    )
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://twitter.com/${link}")
+                        )
+                    )
+                }
+            }
+
+            resources.getString(R.string.youtube) -> {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = if(link.length==24) {
+                    Uri.parse("https://youtube.com/channel/${link}")
+                } else {
+                    Uri.parse("https://youtube.com/${link}")
+                }
+                startActivity(intent)
+            }
         }
     }
 }

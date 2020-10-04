@@ -3,19 +3,21 @@ package com.gmail.kingarthuralagao.us.represent.adapters
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
+import android.view.GestureDetector.SimpleOnGestureListener
 import android.widget.ImageView
 import android.widget.TextView
-import com.google.android.material.card.MaterialCardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
 import com.bumptech.glide.Glide
 import com.gmail.kingarthuralagao.us.represent.R
+import com.google.android.material.card.MaterialCardView
 import java.io.Serializable
 
-class RepresentativesRecyclerViewAdapter (private var myDataSet: MutableList<MutableMap<String, String>>)
+
+class RepresentativesRecyclerViewAdapter(private var myDataSet: MutableList<MutableMap<String, String>>)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Serializable {
 
     private val TAG = javaClass.simpleName
@@ -28,15 +30,15 @@ class RepresentativesRecyclerViewAdapter (private var myDataSet: MutableList<Mut
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        // create a new view
         val v = LayoutInflater.from(parent.context)
             .inflate(R.layout.view_holder_candidate, parent, false) as MaterialCardView
         val candidateImage = v.findViewById<ImageView>(R.id.candidateImage)
         candidateImage.layoutParams = ConstraintLayout.LayoutParams(
             getScreenWidth() / 3,
-            getScreenHeight() / 5)
+            getScreenHeight() / 5
+        )
         // set the view's size, margins, paddings and layout parameters
-
+        Log.i(TAG, "onBindViewHolder")
         return CandidateViewHolder(v)
     }
 
@@ -49,11 +51,10 @@ class RepresentativesRecyclerViewAdapter (private var myDataSet: MutableList<Mut
             else -> "Independent"
         }
         if (myDataSet[position]["photoUrl"].isNullOrEmpty()) {
-            Glide.with(holder.image.context).load(holder.image.context.getDrawable(R.drawable.default_image))
+            Glide.with(holder.image.context).load(holder.image.context.getDrawable(R.drawable.default_image)).fitCenter()
                 .into(holder.image)
         } else {
-            Glide.with(holder.image.context).load(myDataSet[position]["photoUrl"])
-                .into(holder.image)
+            Glide.with(holder.image.context).load(myDataSet[position]["photoUrl"]).fitCenter().into(holder.image)
         }
 
         addAppropriateColors(holder, position)
@@ -63,7 +64,7 @@ class RepresentativesRecyclerViewAdapter (private var myDataSet: MutableList<Mut
         return myDataSet.size
     }
 
-    private fun addAppropriateColors(holder: RepresentativesRecyclerViewAdapter.CandidateViewHolder, position: Int ) {
+    private fun addAppropriateColors(holder: CandidateViewHolder, position: Int) {
         val colorID = when {
             myDataSet[position]["party"] == "Republican Party" -> {
                 holder.cardView.context.resources.getColor(R.color.republicanRed, null)
@@ -81,7 +82,7 @@ class RepresentativesRecyclerViewAdapter (private var myDataSet: MutableList<Mut
         holder.partyTv.setTextColor(colorID)
     }
 
-    fun setData(newData : MutableList<MutableMap<String, String>>) {
+    fun setData(newData: MutableList<MutableMap<String, String>>) {
         this.myDataSet = newData
         notifyDataSetChanged()
     }
@@ -98,3 +99,4 @@ fun getScreenHeight(): Int {
 fun isPortrait() : Boolean {
     return Resources.getSystem().configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 }
+
