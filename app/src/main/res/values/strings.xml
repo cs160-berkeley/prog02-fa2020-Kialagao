@@ -18,5 +18,6 @@
     <string name="website">website</string>
     <string name="twitter">twitter</string>
     <string name="youtube">youtube</string>
-
+    <string name="locationOutsideUS">Location must be within the borders of the U.S.</string>
+    <string name="invalidLocation">Invalid Location</string>
 </resources>

@@ -12,16 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.gmail.kingarthuralagao.us.represent.adapters.RepresentativesRecyclerViewAdapter
 import com.gmail.kingarthuralagao.us.represent.adapters.getScreenHeight
 import com.gmail.kingarthuralagao.us.represent.databinding.FragmentRepresentativesBinding
+import es.dmoral.toasty.Toasty
 
 class RepresentativesFragment : Fragment() {
 
-    private val TAG = javaClass.simpleName
-    lateinit var representativesBinding: FragmentRepresentativesBinding
-    private lateinit var viewManager: LinearLayoutManager
-    lateinit var viewAdapter : RepresentativesRecyclerViewAdapter
-    private lateinit var itemDecorator : VerticalSpaceItemDecoration
-    private var iRepresentativesFragmentListener: IRepresentativesFragmentListener? = null
-    private lateinit var address : String
+    interface ClickListener {
+        fun onClick(view: View?, position: Int)
+    }
 
     companion object {
         fun newInstance(viewAdapter: RepresentativesRecyclerViewAdapter, address: String?): RepresentativesFragment {
@@ -34,6 +31,14 @@ class RepresentativesFragment : Fragment() {
         }
     }
 
+    private val TAG = javaClass.simpleName
+    lateinit var representativesBinding: FragmentRepresentativesBinding
+    private lateinit var viewManager: LinearLayoutManager
+    lateinit var viewAdapter : RepresentativesRecyclerViewAdapter
+    private lateinit var itemDecorator : VerticalSpaceItemDecoration
+    private var iRepresentativesFragmentListener: IRepresentativesFragmentListener? = null
+    private lateinit var address : String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,6 +49,10 @@ class RepresentativesFragment : Fragment() {
         itemDecorator = VerticalSpaceItemDecoration(96)
 
         Toast.makeText(requireContext(), "Height: ${getScreenHeight()}", Toast.LENGTH_SHORT).show()
+    }
+
+    fun hello() {
+
     }
 
     override fun onCreateView(
@@ -66,7 +75,9 @@ class RepresentativesFragment : Fragment() {
         representativesBinding.myLocationBtn.setOnClickListener {iRepresentativesFragmentListener?.onIconClick(
             representativesBinding.myLocationBtn.tag.toString()
         )}
-        representativesBinding.searchBtn.setOnClickListener {iRepresentativesFragmentListener?.onIconClick(representativesBinding.searchBtn.tag.toString())}
+        representativesBinding.searchBtn.setOnClickListener {iRepresentativesFragmentListener?.onIconClick(
+            representativesBinding.searchBtn.tag.toString()
+        )}
         representativesBinding.representativesRv.addOnItemTouchListener(
             RecyclerTouchListener(requireContext(), object : ClickListener {
                 override fun onClick(view: View?, position: Int) {
@@ -94,6 +105,10 @@ class RepresentativesFragment : Fragment() {
         fun onCardViewItemClick(position: Int)
         fun onIconClick(tag: String)
     }
+
+    fun showErrorMsg(s : String) {
+        Toasty.error(requireContext(), s, Toast.LENGTH_LONG, true).show()
+    }
 }
 
 class VerticalSpaceItemDecoration(private val verticalSpaceHeight: Int) : RecyclerView.ItemDecoration() {
@@ -108,13 +123,9 @@ class VerticalSpaceItemDecoration(private val verticalSpaceHeight: Int) : Recycl
     }
 }
 
-interface ClickListener {
-    fun onClick(view: View?, position: Int)
-}
-
 internal class RecyclerTouchListener(
     context: Context?,
-    private val clickListener: ClickListener?
+    private val clickListener: RepresentativesFragment.ClickListener?
 ) :
     RecyclerView.OnItemTouchListener {
     private val gestureDetector: GestureDetector =

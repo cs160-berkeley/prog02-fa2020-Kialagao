@@ -16,7 +16,7 @@ object HawaiiBoundaries {
 
 object MainBoundaries {
     val westernMost = -124.7844079
-    val easternMost = -154.806773
-    val northernMost = -66.9513812
+    val easternMost = -66.9513812
+    val northernMost = 49.3457868
     val southernMost = 24.7433195
 }

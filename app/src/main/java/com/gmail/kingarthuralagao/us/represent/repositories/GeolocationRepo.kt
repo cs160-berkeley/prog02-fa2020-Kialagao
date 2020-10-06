@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.gmail.kingarthuralagao.us.represent.models.GeolocationResult
 import com.gmail.kingarthuralagao.us.represent.models.Results
 import com.gmail.kingarthuralagao.us.represent.services.IGeolocation
+import com.gmail.kingarthuralagao.us.represent.viewmodels.Resource
 import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Callback
@@ -15,9 +16,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 class GeolocationRepo {
     private val TAG = javaClass.simpleName
     var resultList: MutableList<GeolocationResult> = mutableListOf()
-    val mutableLiveData = MutableLiveData<List<GeolocationResult>>()
+    val mutableLiveData = MutableLiveData<Resource<List<GeolocationResult>>>()
+    lateinit var resource: Resource<List<GeolocationResult>>
 
-    fun getResults(formattedQuery: String, key: String) : MutableLiveData<List<GeolocationResult>> {
+    fun getResults(formattedQuery: String, key: String) : MutableLiveData<Resource<List<GeolocationResult>>> {
         callService(formattedQuery, key)
 
         return mutableLiveData
@@ -39,11 +41,15 @@ class GeolocationRepo {
                     resultList.add(result)
                     Log.i(TAG, result.formattedAddress)
                 }
-                mutableLiveData.value = resultList
+                resource = Resource(resultList, "")
+                mutableLiveData.value = resource
             }
 
             override fun onFailure(call: Call<Results>, t: Throwable) {
                 Log.i("Error", t.message!!)
+                resultList.clear()
+                resource = Resource(resultList, t.message)
+                mutableLiveData.value = resource
             }
         })
     }

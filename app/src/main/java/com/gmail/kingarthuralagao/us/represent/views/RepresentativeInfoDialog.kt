@@ -17,6 +17,7 @@ import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.gmail.kingarthuralagao.us.represent.R
 import com.gmail.kingarthuralagao.us.represent.databinding.DialogCandidateDetailedViewBinding
+import com.squareup.picasso.Picasso
 
 private var linkClickListener : RepresentativeInfoDialog.IOnLinkClickListener? = null
 class RepresentativeInfoDialog : DialogFragment() {
@@ -75,11 +76,9 @@ class RepresentativeInfoDialog : DialogFragment() {
         }
 
         if (representativeDetails.photo.isEmpty()) {
-            Glide.with(binding.candidateIv.context).load(binding.candidateIv.context.getDrawable(R.drawable.default_image))
-                .into(binding.candidateIv)
+            Picasso.get().load(R.drawable.default_image).into(binding.candidateIv)
         } else {
-            Glide.with(binding.candidateIv.context).load(representativeDetails.photo)
-                .into(binding.candidateIv)
+            Picasso.get().load(representativeDetails.photo).into(binding.candidateIv)
         }
 
         when (representativeDetails.party) {

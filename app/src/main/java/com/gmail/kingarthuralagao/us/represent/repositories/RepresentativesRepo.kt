@@ -2,6 +2,7 @@ package com.gmail.kingarthuralagao.us.represent.repositories
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.gmail.kingarthuralagao.us.represent.R
 import com.gmail.kingarthuralagao.us.represent.models.representatives.NormalizedInput
 import com.gmail.kingarthuralagao.us.represent.services.IRepresentatives
 import com.google.gson.GsonBuilder
@@ -11,17 +12,19 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import com.gmail.kingarthuralagao.us.represent.models.representatives.Result
+import com.gmail.kingarthuralagao.us.represent.viewmodels.Resource
 
 const val role1 : String = "legislatorLowerBody"
 const val role2 : String = "legislatorUpperBody"
 
 class RepresentativesRepo {
     private val TAG = javaClass.simpleName
-    val mutableLiveData = MutableLiveData<MutableList<MutableMap<String, String>>>()
+    val mutableLiveData = MutableLiveData<Resource<MutableList<MutableMap<String, String>>>>()
     val representativesList = mutableListOf<MutableMap<String, String>>()
     val addressInput = MutableLiveData<String>()
+    lateinit var resource : Resource<MutableList<MutableMap<String, String>>>
 
-    fun getResult(address : String, key : String) : MutableLiveData<MutableList<MutableMap<String, String>> > {
+    fun getResult(address : String, key : String) : MutableLiveData<Resource<MutableList<MutableMap<String, String>>>> {
         Log.i(TAG, "onGetResult")
 
         callService(address, key)
@@ -36,20 +39,29 @@ class RepresentativesRepo {
             Callback<Result> {
             override fun onResponse(call: Call<Result>, response: Response<Result>) {
                 if (!response.isSuccessful || response.body() == null) { //Error
-                    Log.i(TAG, "Code: ${response.code()}")
+                    var errorMessage = ""
+                    if (response.code() == 404) {
+                        errorMessage = "Location must be within the borders of the U.S."
+                    }
+                    representativesList.clear()
+                    resource = Resource(representativesList, errorMessage)
+                    mutableLiveData.value = resource
                     return
                 }
 
                 getRepresentativesInfo(response.body()!!)
                 addressInput.value = buildAddress(response.body()!!.normalizedInput)
-                mutableLiveData.value = representativesList
-                addressInput.value = buildAddress(response.body()!!.normalizedInput)
+                resource = Resource(representativesList, "")
+                mutableLiveData.value = resource
 
                 Log.i(TAG, "onCallResponse")
             }
 
             override fun onFailure(call: Call<Result>, t: Throwable) {
                 Log.i("Error", t.message!!)
+                representativesList.clear()
+                resource = Resource(representativesList, t.message)
+                mutableLiveData.value = resource
             }
         })
     }

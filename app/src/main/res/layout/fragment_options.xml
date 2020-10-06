@@ -30,6 +30,7 @@
 
     <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
         android:id="@+id/currentLocationBtn"
+        android:tag="currentLocationBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -59,6 +60,7 @@
 
     <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
         android:id="@+id/searchLocationBtn"
+        android:tag="searchLocationBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -103,6 +105,7 @@
             android:textColor="@color/colorSecondaryText"/>
 
         <TextView
+            android:id="@+id/randomizeLocationBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"

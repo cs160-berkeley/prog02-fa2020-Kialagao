@@ -3,18 +3,30 @@ package com.gmail.kingarthuralagao.us.represent.adapters
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.util.Log
-import android.view.*
-import android.view.GestureDetector.SimpleOnGestureListener
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.animation.LinearInterpolator
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.gmail.kingarthuralagao.us.represent.R
 import com.google.android.material.card.MaterialCardView
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
+import me.samlss.broccoli.Broccoli
+import me.samlss.broccoli.BroccoliGradientDrawable
+import me.samlss.broccoli.PlaceholderParameter
 import java.io.Serializable
+import java.lang.Exception
 
 
 class RepresentativesRecyclerViewAdapter(private var myDataSet: MutableList<MutableMap<String, String>>)
@@ -39,11 +51,64 @@ class RepresentativesRecyclerViewAdapter(private var myDataSet: MutableList<Muta
         )
         // set the view's size, margins, paddings and layout parameters
         Log.i(TAG, "onBindViewHolder")
+
         return CandidateViewHolder(v)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as CandidateViewHolder).nameTv.text = myDataSet[position]["name"]
+        val broccoli = Broccoli()
+        broccoli.addPlaceholder(
+            PlaceholderParameter.Builder()
+                .setView((holder as CandidateViewHolder).officeTv)
+                .setDrawable(
+                    BroccoliGradientDrawable(
+                        Color.parseColor("#DDDDDD"),
+                        Color.parseColor("#CCCCCC"), 0F, 1000, LinearInterpolator()
+                    )
+                )
+                .build()
+        )
+
+        broccoli.addPlaceholder(
+            PlaceholderParameter.Builder()
+                .setView(holder.nameTv)
+                .setDrawable(
+                    BroccoliGradientDrawable(
+                        Color.parseColor("#DDDDDD"),
+                        Color.parseColor("#CCCCCC"), 0F, 1000, LinearInterpolator()
+                    )
+                )
+                .build()
+        )
+
+        broccoli.addPlaceholder(
+            PlaceholderParameter.Builder()
+                .setView(holder.partyTv)
+                .setDrawable(
+                    BroccoliGradientDrawable(
+                        Color.parseColor("#DDDDDD"),
+                        Color.parseColor("#CCCCCC"), 0F, 1000, LinearInterpolator()
+                    )
+                )
+                .build()
+        )
+
+        broccoli.addPlaceholder(
+            PlaceholderParameter.Builder()
+                .setView(holder.image)
+                .setDrawable(
+                    BroccoliGradientDrawable(
+                        Color.parseColor("#DDDDDD"),
+                        Color.parseColor("#CCCCCC"), 0F, 1000, LinearInterpolator()
+                    )
+                )
+                .build()
+        )
+
+        broccoli.show()
+
+        Picasso.get().load(R.drawable.default_image).into(holder.image)
+        holder.nameTv.text = myDataSet[position]["name"]
         holder.officeTv.text = myDataSet[position]["office"]
         holder.partyTv.text = when (myDataSet[position]["party"]) {
             "Republican Party" -> "Republican"
@@ -51,13 +116,25 @@ class RepresentativesRecyclerViewAdapter(private var myDataSet: MutableList<Muta
             else -> "Independent"
         }
         if (myDataSet[position]["photoUrl"].isNullOrEmpty()) {
-            Glide.with(holder.image.context).load(holder.image.context.getDrawable(R.drawable.default_image)).fitCenter()
-                .into(holder.image)
+            broccoli.clearAllPlaceholders()
+            Picasso.get().load(R.drawable.default_image).into(holder.image)
+            addAppropriateColors(holder, position)
         } else {
-            Glide.with(holder.image.context).load(myDataSet[position]["photoUrl"]).fitCenter().into(holder.image)
-        }
+            Picasso.get().load(myDataSet[position]["photoUrl"])
+                .into((holder as CandidateViewHolder).image, object : Callback {
+                    override fun onSuccess() {
+                        Log.i(TAG, "HEllooo")
+                        broccoli.clearAllPlaceholders()
+                        Picasso.get().load(myDataSet[position]["photoUrl"]).into(holder.image)
+                        addAppropriateColors(holder, position)
+                    }
 
-        addAppropriateColors(holder, position)
+                    override fun onError(e: Exception?) {
+                        TODO("Not yet implemented")
+                    }
+                })
+        }
+        //addAppropriateColors(holder, position)
     }
 
     override fun getItemCount(): Int {
