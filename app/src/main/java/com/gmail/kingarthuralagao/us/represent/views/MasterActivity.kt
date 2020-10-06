@@ -45,13 +45,7 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
         OptionsFragment()
     }
 
-    private val representativesFragment : RepresentativesFragment by lazy {
-        Log.i(TAG, "creatingRepFragment")
-        RepresentativesFragment.newInstance(
-            representativesRecyclerViewAdapter,
-            masterActivityViewModel.inputAddress
-        )
-    }
+    lateinit var representativesFragment : RepresentativesFragment
 
     private val TAG = javaClass.simpleName
     private lateinit var locationManager : LocationManager
@@ -73,10 +67,8 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
                 if (!masterActivityViewModel.isInTheUS(location.latitude, location.longitude)) {
 
                     if (optionsFragment.isVisible) {
-                        optionsFragment.startTimer(
-                            R.drawable.ic_error,
-                            resources.getString(R.string.locationOutsideUS)
-                        )
+                        optionsFragment.manageButtons(R.drawable.ic_error)
+                        optionsFragment.startTimer(resources.getString(R.string.locationOutsideUS))
                     } else {
                         representativesFragment.showErrorMsg(resources.getString(R.string.locationOutsideUS))
                     }
@@ -114,11 +106,26 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
                     break
                 }
             }
-            masterActivityViewModel.fetchRepresentatives(address, resources.getString(R.string.api_key))
+
+            if (!address.contains("USA")) {
+                Log.i(TAG, "Geolocation Error: ${it.message}")
+                if (optionsFragment.isVisible) {
+                    optionsFragment.manageButtons(R.drawable.ic_error)
+                    optionsFragment.startTimer(resources.getString(R.string.locationOutsideUS))
+                } else {
+                    representativesFragment.showErrorMsg(resources.getString(R.string.locationOutsideUS))
+                }
+            } else {
+                masterActivityViewModel.fetchRepresentatives(
+                    address,
+                    resources.getString(R.string.api_key)
+                )
+            }
         } else {
-            Log.i(TAG, "Error: ${it.message}")
+            Log.i(TAG, "Geolocation Error: ${it.message}")
             if (optionsFragment.isVisible) {
-                optionsFragment.startTimer(R.drawable.ic_error, resources.getString(R.string.invalidLocation))
+                optionsFragment.manageButtons(R.drawable.ic_error)
+                optionsFragment.startTimer(resources.getString(R.string.invalidLocation))
             } else {
                 representativesFragment.showErrorMsg(resources.getString(R.string.invalidLocation))
             }
@@ -126,7 +133,7 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
     }
 
     private val representativesObserver = Observer<Resource<MutableList<MutableMap<String, String>>>> {
-        if (!it.data.isNullOrEmpty()) {
+        if (!it.data.isNullOrEmpty() && it.message!!.isEmpty()) {
             for (i in it.data!!) {
                 Log.i(TAG, i["name"]!!)
             }
@@ -134,64 +141,68 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
             if (optionsFragment.isVisible) {
                 representativesRecyclerViewAdapter = RepresentativesRecyclerViewAdapter(it.data!!)
 
-                if (!optionsFragment.binding.currentLocationBtn.isClickable) {
-                    optionsFragment.binding.currentLocationBtn.doneLoadingAnimation(
-                        R.color.colorAccent,
-                        BitmapFactory.decodeResource(resources, R.drawable.ic_done_white_48dp)
-                    )
-                } else {
-                    optionsFragment.binding.searchLocationBtn.doneLoadingAnimation(
-                        R.color.colorAccent,
-                        BitmapFactory.decodeResource(resources, R.drawable.ic_done_white_48dp)
-                    )
-                }
+                optionsFragment.manageButtons(R.drawable.ic_done_white_48dp)
 
+                if (optionsFragment.activeButton != null) {
+                    object : CountDownTimer(2000, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {
+                            if (millisUntilFinished <= 1000L) {
 
-                object : CountDownTimer(2000, 1000) {
-                    override fun onTick(millisUntilFinished: Long) {
-                        if (millisUntilFinished <= 1000L) {
+                                if (optionsFragment.activeButton == optionsFragment.binding.currentLocationBtn) {
+                                    optionsFragment.binding.currentLocationBtn.revertAnimation {
+                                        optionsFragment.binding.currentLocationBtn.background =
+                                            resources.getDrawable(
+                                                R.drawable.current_location_btn,
+                                                null
+                                            )
+                                    }
+                                } else if (optionsFragment.activeButton == optionsFragment.binding.searchLocationBtn) {
+                                    optionsFragment.binding.searchLocationBtn.revertAnimation {
+                                        optionsFragment.binding.searchLocationBtn.background =
+                                            resources.getDrawable(
+                                                R.drawable.search_location_btn,
+                                                null
+                                            )
+                                    }
+                                } else {
 
-                            if (!optionsFragment.binding.currentLocationBtn.isClickable) {
-                                optionsFragment.binding.currentLocationBtn.revertAnimation {
-                                    optionsFragment.binding.currentLocationBtn.background = resources.getDrawable(
-                                        R.drawable.current_location_btn,
-                                        null
-                                    )
-                                }
-                            } else {
-                                optionsFragment.binding.searchLocationBtn.revertAnimation {
-                                    optionsFragment.binding.searchLocationBtn.background = resources.getDrawable(
-                                        R.drawable.search_location_btn,
-                                        null
-                                    )
                                 }
                             }
                         }
-                    }
 
-                    override fun onFinish() {
-                        if (supportFragmentManager.findFragmentByTag("representatives") == null) {
-                            supportFragmentManager.beginTransaction()
-                                .setCustomAnimations(R.anim.enter_right_to_left, R.anim.exit_right_to_left, R.anim.enter_left_to_right, R.anim.exit_left_to_right)
-                                .replace(fragmentContainer.id, representativesFragment,"representatives")
-                                .addToBackStack(null)
-                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                .commit()
+                        override fun onFinish() {
+                            switchFragments()
                         }
-                    }
-                }.start()
+                    }.start()
+                } else {
+                    switchFragments()
+                }
             } else {
                 representativesRecyclerViewAdapter.setData(it.data!!)
                 representativesFragment.representativesBinding.addressTv.text = masterActivityViewModel.inputAddress
             }
         } else {
-            Log.i(TAG, "Error: ${it.message}")
+            Log.i(TAG, "Representative Error: ${it.message}")
             if (optionsFragment.isVisible) {
-                optionsFragment.startTimer(R.drawable.ic_error, it.message!!)
+                optionsFragment.manageButtons(R.drawable.ic_error)
+                optionsFragment.startTimer(it.message!!)
             } else {
                 representativesFragment.showErrorMsg(it.message!!)
             }
         }
+    }
+
+    fun switchFragments() {
+        representativesFragment = RepresentativesFragment.newInstance(
+            representativesRecyclerViewAdapter,
+            masterActivityViewModel.inputAddress
+        )
+        supportFragmentManager.beginTransaction()
+            .setCustomAnimations(R.anim.enter_right_to_left, R.anim.exit_right_to_left, R.anim.enter_left_to_right, R.anim.exit_left_to_right)
+            .replace(fragmentContainer.id, representativesFragment,"representatives")
+            .addToBackStack(null)
+            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            .commit()
     }
 
     override fun onRequestPermissionsResult(
@@ -217,13 +228,13 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
                         val place = Autocomplete.getPlaceFromIntent(data)
                         if (optionsFragment.isVisible) {
                             optionsFragment.binding.searchLocationBtn.startAnimation()
+                            optionsFragment.setClickable(false)
                         }
                         masterActivityViewModel.fetchRepresentatives(place.address.toString(), resources.getString(R.string.api_key)
                         )
                     }
                 }
                 AutocompleteActivity.RESULT_ERROR -> {
-                    // TODO: Handle the error.
                     data?.let {
                         val status = Autocomplete.getStatusFromIntent(data)
                         Log.i(TAG, status.statusMessage.toString())
@@ -275,9 +286,8 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
     }
 
     override fun onRandomizeLocation() {
-        for (coord in masterActivityViewModel.getRandomCoordinates()) {
-            
-        }
+        val randomCoordinate = masterActivityViewModel.getRandomCoordinate()
+        masterActivityViewModel.fetchResults(randomCoordinate.first, randomCoordinate.second, resources.getString(R.string.api_key))
     }
 
     override fun onCardViewItemClick(position: Int) {
@@ -291,10 +301,17 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
     }
 
     override fun onIconClick(tag: String) {
-        if (tag == resources.getString(R.string.myLocationIconTag)) {
-            getUserLocation()
-        } else {
-            initializePlaceAutocomplete()
+        when (tag) {
+            resources.getString(R.string.myLocationIconTag) -> {
+                getUserLocation()
+            }
+            resources.getString(R.string.searchIconTag) -> {
+                initializePlaceAutocomplete()
+            }
+            else -> {
+                val randomCoordinate = masterActivityViewModel.getRandomCoordinate()
+                masterActivityViewModel.fetchResults(randomCoordinate.first, randomCoordinate.second, resources.getString(R.string.api_key))
+            }
         }
     }
 

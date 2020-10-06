@@ -39,16 +39,16 @@ class RepresentativesRepo {
             Callback<Result> {
             override fun onResponse(call: Call<Result>, response: Response<Result>) {
                 if (!response.isSuccessful || response.body() == null) { //Error
-                    var errorMessage = ""
+                    var errorMessage = response.message()
+                    Log.i(TAG, response.code().toString())
+                    Log.i(TAG, response.toString())
                     if (response.code() == 404) {
                         errorMessage = "Location must be within the borders of the U.S."
                     }
-                    representativesList.clear()
                     resource = Resource(representativesList, errorMessage)
                     mutableLiveData.value = resource
                     return
                 }
-
                 getRepresentativesInfo(response.body()!!)
                 addressInput.value = buildAddress(response.body()!!.normalizedInput)
                 resource = Resource(representativesList, "")
@@ -59,7 +59,7 @@ class RepresentativesRepo {
 
             override fun onFailure(call: Call<Result>, t: Throwable) {
                 Log.i("Error", t.message!!)
-                representativesList.clear()
+                //representativesList.clear()
                 resource = Resource(representativesList, t.message)
                 mutableLiveData.value = resource
             }

@@ -88,7 +88,7 @@
         app:finalCornerAngle="32dp"/>
 
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -99,8 +99,15 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
+            android:id="@+id/questionTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:text="@string/noLocationQuestion"
             android:textColor="@color/colorSecondaryText"/>
 
@@ -109,8 +116,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
+            android:layout_marginTop="0dp"
+            app:layout_constraintStart_toEndOf="@id/questionTv"
+            app:layout_constraintTop_toTopOf="parent"
             android:text="@string/randomizeLocation"
             android:textSize="18sp"
             android:textColor="@color/independentPurple"/>
-    </LinearLayout>
+
+        <com.eyalbira.loadingdots.LoadingDots
+            android:id="@+id/loadingDots"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="@id/randomizeLocationBtn"
+            app:layout_constraintEnd_toEndOf="@id/randomizeLocationBtn"
+            app:layout_constraintTop_toTopOf="parent"
+            app:LoadingDots_dots_count="10"
+            app:LoadingDots_dots_color="@color/independentPurple"
+            tools:visibility="visible">
+
+        </com.eyalbira.loadingdots.LoadingDots>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

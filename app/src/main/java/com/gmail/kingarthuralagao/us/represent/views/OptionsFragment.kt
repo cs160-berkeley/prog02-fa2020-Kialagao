@@ -3,6 +3,7 @@ package com.gmail.kingarthuralagao.us.represent.views
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.opengl.Visibility
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import br.com.simplepass.loadingbutton.customViews.CircularProgressButton
 import com.gmail.kingarthuralagao.us.represent.R
@@ -28,7 +30,7 @@ class OptionsFragment : Fragment(), View.OnClickListener {
 
     private val TAG = javaClass.simpleName
     lateinit var binding : FragmentOptionsBinding
-    private lateinit var activeButton : CircularProgressButton
+    var activeButton : CircularProgressButton? = null
     private var onButtonClick : IButtonClickListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,24 +68,61 @@ class OptionsFragment : Fragment(), View.OnClickListener {
         when (v!!.id) {
             binding.currentLocationBtn.id -> {
                 activeButton = binding.currentLocationBtn
+                setClickable(false)
                 binding.currentLocationBtn.startAnimation()
                 onButtonClick!!.onCurrentLocationBtnClick()
             }
             binding.searchLocationBtn.id -> {
                 activeButton = binding.searchLocationBtn
+                setClickable(false)
                 onButtonClick!!.onSearchLocationBtnClick()
             }
 
             else -> {
+                activeButton = null
+                setClickable(false)
+                binding.randomizeLocationBtn.visibility = View.INVISIBLE
+                binding.loadingDots.startAnimation()
+                binding.loadingDots.visibility = View.VISIBLE
                 onButtonClick!!.onRandomizeLocation()
             }
         }
     }
 
-    fun startTimer(resourceID : Int, errorMsg : String) {
-        binding.currentLocationBtn.doneLoadingAnimation(R.color.colorAccent,
-            BitmapFactory.decodeResource(resources, resourceID))
-        MyCountDownTimer(2000, 1000, activeButton, errorMsg).start()
+    fun manageButtons(resourceID: Int) {
+        setClickable(true)
+
+        if (activeButton == null) {
+            binding.loadingDots.stopAnimation()
+            binding.loadingDots.visibility = View.INVISIBLE
+            binding.randomizeLocationBtn.visibility = View.VISIBLE
+        } else {
+            activeButton!!.doneLoadingAnimation(R.color.colorAccent,
+                BitmapFactory.decodeResource(resources, resourceID))
+        }
+    }
+
+    fun setClickable(boolean : Boolean) {
+        when (activeButton) {
+            null -> {
+                binding.searchLocationBtn.isClickable = boolean
+                binding.currentLocationBtn.isClickable = boolean
+            }
+            binding.currentLocationBtn -> {
+                binding.searchLocationBtn.isClickable = boolean
+                binding.randomizeLocationBtn.isClickable = boolean
+            }
+            else -> {
+                binding.currentLocationBtn.isClickable = boolean
+                binding.randomizeLocationBtn.isClickable = boolean
+            }
+        }
+    }
+
+    fun startTimer(errorMsg : String) {
+        if (activeButton != null) {
+            MyCountDownTimer(2000, 1000, activeButton!!, errorMsg).start()
+        }
     }
 
     private class MyCountDownTimer(millisInFuture : Long, countDownInterval : Long,

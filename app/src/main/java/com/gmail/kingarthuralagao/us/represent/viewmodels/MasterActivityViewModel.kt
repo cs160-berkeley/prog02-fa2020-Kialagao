@@ -4,9 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.gmail.kingarthuralagao.us.represent.AlaskaBoundaries
-import com.gmail.kingarthuralagao.us.represent.HawaiiBoundaries
-import com.gmail.kingarthuralagao.us.represent.MainBoundaries
+import com.gmail.kingarthuralagao.us.represent.*
 import com.gmail.kingarthuralagao.us.represent.adapters.RepresentativesRecyclerViewAdapter
 import com.gmail.kingarthuralagao.us.represent.models.GeolocationResult
 import com.gmail.kingarthuralagao.us.represent.models.representatives.Result
@@ -28,6 +26,7 @@ class MasterActivityViewModel : ViewModel() {
         RepresentativesRepo()
     }
 
+
     var representativesMutableLiveData = representativesRepo.mutableLiveData
     var geolocationMutableLiveData  = geolocationRepo.mutableLiveData
     var inputAddress = ""
@@ -39,18 +38,14 @@ class MasterActivityViewModel : ViewModel() {
         geolocationRepo.getResults(formattedQuery, key)
     }
 
-    fun hasValidAddress(lat : Double, lng : Double, key : String) {
-        val formattedQuery = "${lat},${lng}"
-    }
-
     fun fetchRepresentatives(address : String, key : String) {
         val formattedAddress = address.replace("\\s".toRegex(), "+")
         inputAddress = address
         representativesRepo.getResult(formattedAddress, key)
     }
 
-    fun getRandomCoordinates() : MutableList<Pair<Double, Double>> {
-        return locationRandomizer.getRandomCoordinates()
+    fun getRandomCoordinate() : Pair<Double, Double> {
+        return locationRandomizer.getRandomCoordinate()
     }
 
     fun isInTheUS(lat : Double, lng: Double) : Boolean {
@@ -85,41 +80,24 @@ data class Resource<T>(var data: T?, var message: String?) {
     }
 }
 
+
 class LocationRandomizer {
-    fun getRandomCoordinates() : MutableList<Pair<Double, Double>>{
-        val stateNum = oneToFifty()
-        val coordinatePairs = mutableListOf<Pair<Double, Double>>()
-        when (stateNum) {
-            49 -> {
-                for (i in 0..10) {
-                    val lat = generateRandomLatitude(AlaskaBoundaries.southernMost, AlaskaBoundaries.northernMost)
-                    val long = generateRandomLongitude(AlaskaBoundaries.westernMost, AlaskaBoundaries.easternMost)
-                    val latLng = Pair(lat, long)
-                    coordinatePairs.add(latLng)
-                }
-            }
-            50 -> {
-                for (i in 0..10) {
-                    val lat = generateRandomLatitude(HawaiiBoundaries.southernMost, HawaiiBoundaries.northernMost)
-                    val long = generateRandomLongitude(HawaiiBoundaries.westernMost, HawaiiBoundaries.easternMost)
-                    val latLng = Pair(lat, long)
-                    coordinatePairs.add(latLng)
-                }
-            }
-            else -> {
-                for (i in 0..10) {
-                    val lat = generateRandomLatitude(MainBoundaries.southernMost, MainBoundaries.northernMost)
-                    val long = generateRandomLongitude(MainBoundaries.westernMost, MainBoundaries.easternMost)
-                    val latLng = Pair(lat, long)
-                    coordinatePairs.add(latLng)
-                }
-            }
-        }
-        return coordinatePairs
+    private val rectanglesList : MutableList<Rectangle> by lazy {
+        getRectangles()
     }
 
-    private fun oneToFifty() : Int {
-        return Random.nextInt(1,51) //
+    fun getRandomCoordinate() : Pair<Double, Double>{
+        val randomNum = oneToHundred()
+        Log.i("LocationRandomizer", randomNum.toString())
+        val rectangle = getRectangle(randomNum)
+
+        val randomLat = generateRandomLatitude(rectangle.s,  rectangle.n)
+        val randomLng = generateRandomLongitude(rectangle.w, rectangle.e)
+        return Pair(randomLat, randomLng)
+    }
+
+    private fun oneToHundred() : Double {
+        return Random.nextDouble(0.0, 100.0) //
     }
 
     private fun generateRandomLatitude(south : Double, north : Double) : Double {
@@ -128,5 +106,39 @@ class LocationRandomizer {
 
     private fun generateRandomLongitude(west : Double, east : Double) : Double {
         return Random.nextDouble(west, east + 1)
+    }
+
+    private fun getRectangle(rectNumber : Double) : Rectangle {
+        if (rectNumber < 1.4) {
+            return rectanglesList[0]
+        } else if (rectNumber >= 1.4 && rectNumber < 4.0) {
+            return rectanglesList[1]
+        } else if (rectNumber >= 4.0 && rectNumber < 9.6) {
+            return rectanglesList[2]
+        } else if (rectNumber >= 9.6 && rectNumber < 63.3) {
+            return rectanglesList[3]
+        } else if (rectNumber >= 63.3 && rectNumber < 71.3) {
+            return rectanglesList[4]
+        } else if (rectNumber >= 71.3 && rectNumber < 73.5) {
+            return rectanglesList[5]
+        } else if (rectNumber >= 73.5 && rectNumber < 73.9) {
+            return rectanglesList[6]
+        } else if (rectNumber >= 73.9 && rectNumber < 74.2) {
+            return rectanglesList[7]
+        } else if (rectNumber >= 74.2 && rectNumber < 78.1) {
+            return rectanglesList[8]
+        } else if (rectNumber >= 78.1 && rectNumber < 79.8) {
+            return rectanglesList[9]
+        } else if (rectNumber >= 79.8 && rectNumber < 80.2) {
+            return rectanglesList[10]
+        } else if (rectNumber >= 80.2 && rectNumber < 100.0) {
+            return rectanglesList[11]
+        } else if (rectNumber >= 100 && rectNumber < 100.6) {
+            return rectanglesList[12]
+        } else if (rectNumber >= 100.6 && rectNumber < 100.8) {
+            return rectanglesList[13]
+        } else {
+            return rectanglesList[14]
+        }
     }
 }

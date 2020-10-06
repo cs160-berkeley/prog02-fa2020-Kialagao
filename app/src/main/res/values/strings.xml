@@ -20,4 +20,5 @@
     <string name="youtube">youtube</string>
     <string name="locationOutsideUS">Location must be within the borders of the U.S.</string>
     <string name="invalidLocation">Invalid Location</string>
+    <string name="randomIconTag">randomLocation</string>
 </resources>

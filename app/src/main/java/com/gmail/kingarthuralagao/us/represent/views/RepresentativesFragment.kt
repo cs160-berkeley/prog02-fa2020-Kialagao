@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.gmail.kingarthuralagao.us.represent.R
 import com.gmail.kingarthuralagao.us.represent.adapters.RepresentativesRecyclerViewAdapter
 import com.gmail.kingarthuralagao.us.represent.adapters.getScreenHeight
 import com.gmail.kingarthuralagao.us.represent.databinding.FragmentRepresentativesBinding
@@ -78,6 +79,10 @@ class RepresentativesFragment : Fragment() {
         representativesBinding.searchBtn.setOnClickListener {iRepresentativesFragmentListener?.onIconClick(
             representativesBinding.searchBtn.tag.toString()
         )}
+
+        representativesBinding.randomLocationBtn.setOnClickListener {iRepresentativesFragmentListener?.onIconClick(
+            representativesBinding.randomLocationBtn.tag.toString())}
+
         representativesBinding.representativesRv.addOnItemTouchListener(
             RecyclerTouchListener(requireContext(), object : ClickListener {
                 override fun onClick(view: View?, position: Int) {
