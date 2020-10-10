@@ -51,8 +51,15 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
     private lateinit var locationManager : LocationManager
     private lateinit var locationListener: LocationListener
     lateinit var masterActivityViewModel : MasterActivityViewModel
-    lateinit var representativesRecyclerViewAdapter: RepresentativesRecyclerViewAdapter
+    private lateinit var representativesRecyclerViewAdapter: RepresentativesRecyclerViewAdapter
     private var representativePosition by Delegates.notNull<Int>()
+
+    override fun onBackPressed() {
+        if (optionsFragment.isVisible) {
+            return
+        }
+        super.onBackPressed()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

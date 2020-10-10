@@ -8,6 +8,7 @@ import com.gmail.kingarthuralagao.us.represent.R
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.splashScreenTheme);
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 

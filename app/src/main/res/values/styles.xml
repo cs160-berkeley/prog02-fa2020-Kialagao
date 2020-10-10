@@ -33,4 +33,18 @@
         <item name="background">@drawable/current_location_btn</item>
     </style>
 
+    <style name="splashScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/ic_splash_screen</item>
+        <item name="android:windowAnimationStyle">@style/SplashScreenAnimationTransition</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+    </style>
+
+    <style name="SplashScreenAnimationTransition" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_up_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/slide_up_out</item>
+        <item name="android:activityCloseExitAnimation">@anim/slide_up_out</item>
+    </style>
 </resources>
