@@ -5,8 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -23,7 +21,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.gmail.kingarthuralagao.us.represent.R
 import com.gmail.kingarthuralagao.us.represent.adapters.RepresentativesRecyclerViewAdapter
-import com.gmail.kingarthuralagao.us.represent.models.GeolocationResult
+import com.gmail.kingarthuralagao.us.represent.models.geolocation.GeolocationResult
 import com.gmail.kingarthuralagao.us.represent.viewmodels.MasterActivityViewModel
 import com.gmail.kingarthuralagao.us.represent.viewmodels.Resource
 import com.google.android.libraries.places.api.Places
@@ -31,9 +29,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
-import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_master.*
-import kotlinx.android.synthetic.main.fragment_options.*
 import kotlin.properties.Delegates
 
 const val AUTOCOMPLETE_REQUEST_CODE = 2

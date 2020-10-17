@@ -21,4 +21,7 @@
     <string name="locationOutsideUS">Location must be within the borders of the U.S.</string>
     <string name="invalidLocation">Invalid Location</string>
     <string name="randomIconTag">randomLocation</string>
+    <string name="representatives">Representatives</string>
+    <string name="polling_locations">Polling Locations</string>
+    <string name="drop_off_locations">Drop-Off Locations</string>
 </resources>

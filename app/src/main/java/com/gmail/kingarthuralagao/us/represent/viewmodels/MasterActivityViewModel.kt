@@ -1,13 +1,8 @@
 package com.gmail.kingarthuralagao.us.represent.viewmodels
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.gmail.kingarthuralagao.us.represent.*
-import com.gmail.kingarthuralagao.us.represent.adapters.RepresentativesRecyclerViewAdapter
-import com.gmail.kingarthuralagao.us.represent.models.GeolocationResult
-import com.gmail.kingarthuralagao.us.represent.models.representatives.Result
 import com.gmail.kingarthuralagao.us.represent.repositories.GeolocationRepo
 import com.gmail.kingarthuralagao.us.represent.repositories.RepresentativesRepo
 import kotlin.random.Random
@@ -93,6 +88,7 @@ class LocationRandomizer {
 
         val randomLat = generateRandomLatitude(rectangle.s,  rectangle.n)
         val randomLng = generateRandomLongitude(rectangle.w, rectangle.e)
+        Log.d(javaClass.simpleName, "Latitude: $randomLat, Longitude: $randomLng")
         return Pair(randomLat, randomLng)
     }
 
@@ -101,11 +97,11 @@ class LocationRandomizer {
     }
 
     private fun generateRandomLatitude(south : Double, north : Double) : Double {
-        return Random.nextDouble(south, north + 1)
+        return Random.nextDouble(south, north)
     }
 
     private fun generateRandomLongitude(west : Double, east : Double) : Double {
-        return Random.nextDouble(west, east + 1)
+        return Random.nextDouble(west, east)
     }
 
     private fun getRectangle(rectNumber : Double) : Rectangle {

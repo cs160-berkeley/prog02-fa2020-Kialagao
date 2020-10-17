@@ -13,9 +13,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.marginTop
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.gmail.kingarthuralagao.us.represent.R
+import com.gmail.kingarthuralagao.us.represent.adapters.getScreenHeight
+import com.gmail.kingarthuralagao.us.represent.adapters.getScreenWidth
 import com.gmail.kingarthuralagao.us.represent.databinding.DialogCandidateDetailedViewBinding
 import com.squareup.picasso.Picasso
 
@@ -47,6 +51,28 @@ class RepresentativeInfoDialog : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+        // Modify image constraints
+        val candidateImageLayout = binding.candidateIv.layoutParams as ViewGroup.MarginLayoutParams
+        candidateImageLayout.topMargin = getScreenHeight() / 10
+        val candidateImageLayoutAsConstraint = binding.candidateIv.layoutParams as ConstraintLayout.LayoutParams
+        candidateImageLayoutAsConstraint.width = (getScreenWidth() / 3) + 32
+        candidateImageLayoutAsConstraint.height = getScreenHeight() / 5
+
+        // Modify cardview constraints
+        val cardViewLayout = binding.candidateDetailsCv.layoutParams as ViewGroup.MarginLayoutParams
+        cardViewLayout.topMargin = getScreenHeight() / 10
+
+        val cardViewLayoutAsConstraint = binding.candidateDetailsCv.layoutParams as ConstraintLayout.LayoutParams
+        cardViewLayoutAsConstraint.topToTop = binding.candidateIv.id
+
+        // Modify name constraints
+        val nameLayout = binding.candidateNameTv.layoutParams as ViewGroup.MarginLayoutParams
+        nameLayout.topMargin = 16 + (getScreenHeight() / 10)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.candidateNameTv.text = representativeDetails.name
         binding.contentCandidate.detailedOfficeTv.text = representativeDetails.office
 
@@ -76,9 +102,17 @@ class RepresentativeInfoDialog : DialogFragment() {
         }
 
         if (representativeDetails.photo.isEmpty()) {
-            Picasso.get().load(R.drawable.default_image).into(binding.candidateIv)
+            Picasso
+                .get()
+                .load(R.drawable.default_image)
+                .resize((getScreenWidth() / 3) + 32, getScreenHeight() / 5)
+                .into(binding.candidateIv)
         } else {
-            Picasso.get().load(representativeDetails.photo).into(binding.candidateIv)
+            Picasso
+                .get()
+                .load(representativeDetails.photo)
+                .resize((getScreenWidth() / 3) + 32, getScreenHeight() / 5)
+                .into(binding.candidateIv)
         }
 
         when (representativeDetails.party) {
@@ -92,11 +126,6 @@ class RepresentativeInfoDialog : DialogFragment() {
                 binding.candidateDetailsCv.setCardBackgroundColor(binding.candidateDetailsCv.context.resources.getColor(R.color.independentPurpleWithAlpha, null))
             }
         }
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         binding.closeBtn.setOnClickListener {
             dismiss()
         }
@@ -121,7 +150,7 @@ class RepresentativeInfoDialog : DialogFragment() {
         val dialog: Dialog? = dialog
         if (dialog != null) {
             val width = ViewGroup.LayoutParams.MATCH_PARENT
-            val height = ViewGroup.LayoutParams.WRAP_CONTENT
+            val height = ViewGroup.LayoutParams.MATCH_PARENT
             dialog.window?.setLayout(width, height)
             dialog.window?.setBackgroundDrawableResource((android.R.color.transparent))
         }

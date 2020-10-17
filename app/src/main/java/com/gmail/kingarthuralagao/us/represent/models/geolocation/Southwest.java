@@ -1,4 +1,4 @@
-package com.gmail.kingarthuralagao.us.represent.models;
+package com.gmail.kingarthuralagao.us.represent.models.geolocation;
 
 import java.io.Serializable;
 import android.os.Parcel;
@@ -7,39 +7,38 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Location implements Serializable, Parcelable
+public class Southwest implements Serializable, Parcelable
 {
-
     @SerializedName("lat")
     @Expose
     private Double lat;
     @SerializedName("lng")
     @Expose
     private Double lng;
-    public final static Parcelable.Creator<Location> CREATOR = new Creator<Location>() {
+    public final static Parcelable.Creator<Southwest> CREATOR = new Creator<Southwest>() {
 
 
         @SuppressWarnings({
                 "unchecked"
         })
-        public Location createFromParcel(Parcel in) {
-            return new Location(in);
+        public Southwest createFromParcel(Parcel in) {
+            return new Southwest(in);
         }
 
-        public Location[] newArray(int size) {
-            return (new Location[size]);
+        public Southwest[] newArray(int size) {
+            return (new Southwest[size]);
         }
 
     }
             ;
-    private final static long serialVersionUID = 591612138771565997L;
+    private final static long serialVersionUID = 2070384658686184264L;
 
-    protected Location(Parcel in) {
+    protected Southwest(Parcel in) {
         this.lat = ((Double) in.readValue((Double.class.getClassLoader())));
         this.lng = ((Double) in.readValue((Double.class.getClassLoader())));
     }
 
-    public Location() {
+    public Southwest() {
     }
 
     public void writeToParcel(Parcel dest, int flags) {
@@ -52,3 +51,4 @@ public class Location implements Serializable, Parcelable
     }
 
 }
+

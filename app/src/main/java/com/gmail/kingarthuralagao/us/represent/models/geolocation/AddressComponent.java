@@ -1,4 +1,4 @@
-package com.gmail.kingarthuralagao.us.represent.models;
+package com.gmail.kingarthuralagao.us.represent.models.geolocation;
 
 import java.io.Serializable;
 import java.util.List;

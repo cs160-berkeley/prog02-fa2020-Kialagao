@@ -1,6 +1,6 @@
 package com.gmail.kingarthuralagao.us.represent.services;
 
-import com.gmail.kingarthuralagao.us.represent.models.Results;
+import com.gmail.kingarthuralagao.us.represent.models.geolocation.Results;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

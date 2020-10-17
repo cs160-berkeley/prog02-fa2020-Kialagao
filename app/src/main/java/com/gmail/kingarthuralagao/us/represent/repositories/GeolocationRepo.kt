@@ -2,8 +2,8 @@ package com.gmail.kingarthuralagao.us.represent.repositories
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.gmail.kingarthuralagao.us.represent.models.GeolocationResult
-import com.gmail.kingarthuralagao.us.represent.models.Results
+import com.gmail.kingarthuralagao.us.represent.models.geolocation.GeolocationResult
+import com.gmail.kingarthuralagao.us.represent.models.geolocation.Results
 import com.gmail.kingarthuralagao.us.represent.services.IGeolocation
 import com.gmail.kingarthuralagao.us.represent.viewmodels.Resource
 import com.google.gson.GsonBuilder

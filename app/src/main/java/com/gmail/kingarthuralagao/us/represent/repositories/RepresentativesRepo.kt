@@ -1,5 +1,6 @@
 package com.gmail.kingarthuralagao.us.represent.repositories
 
+import android.os.AsyncTask
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.gmail.kingarthuralagao.us.represent.R
@@ -13,6 +14,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import com.gmail.kingarthuralagao.us.represent.models.representatives.Result
 import com.gmail.kingarthuralagao.us.represent.viewmodels.Resource
+import org.json.JSONObject
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
 const val role1 : String = "legislatorLowerBody"
 const val role2 : String = "legislatorUpperBody"
@@ -32,6 +37,13 @@ class RepresentativesRepo {
     }
 
     private fun callService(address : String, key : String) {
+
+        /*
+        val BASE_URL = "https://civicinfo.googleapis.com/civicinfo/v2/"
+        val downloadTask = DownloadTask()
+        val formattedUrl = "${BASE_URL}representatives?address=${address}&roles=${role1}&roles=${role2}&key=${key}"
+        val url = "https://civicinfo.googleapis.com/civicinfo/v2/representatives?address=35%20Castillo%20Street%20San%20Francisco%20California%2C%2094134&roles=legislatorUpperBody&roles=legislatorLowerBody&key=${key}"
+        downloadTask.execute(formattedUrl)*/
 
         val apiService = RepresentativesRetrofitClient.representativesApi
 
@@ -111,11 +123,6 @@ object RepresentativesRetrofitClient {
 }
 
 /*
-        val BASE_URL = "https://civicinfo.googleapis.com/civicinfo/v2/"
-        val downloadTask = DownloadTask()
-        val formattedUrl = "${BASE_URL}representatives?address=${address}&roles=${role1}&roles=${role2}&key=${key}"
-        val url = "https://civicinfo.googleapis.com/civicinfo/v2/representatives?address=35%20Castillo%20Street%20San%20Francisco%20California%2C%2094134&roles=legislatorUpperBody&roles=legislatorLowerBody&key=${key}"
-        downloadTask.execute(formattedUrl)
 class DownloadTask : AsyncTask<String, Void, String>() {
     override fun doInBackground(vararg params: String): String {
         var result = ""
@@ -144,6 +151,14 @@ class DownloadTask : AsyncTask<String, Void, String>() {
     override fun onPostExecute(result: String) {
         super.onPostExecute(result)
 
-        Log.i("RepresentativeRepo", result)
+        try {
+            val jsonObject = JSONObject(result)
+
+            val jsonArray = jsonObject.getJSONArray("offices")
+            val jsonObjects = JSONObject(jsonArray.get(0).toString())
+            Log.i("RepresentativeRepo", jsonObjects.getString("name"))
+        } catch (e : Exception) {
+            Log.i("Error", e.message.toString())
+        }
     }
 }*/
