@@ -24,6 +24,9 @@ public class Official {
     @SerializedName("photoUrl")
     @Expose
     private String photoUrl;
+    @SerializedName("emails")
+    @Expose
+    private List<String> emails = null;
     @SerializedName("channels")
     @Expose
     private List<Channel> channels = null;
@@ -84,4 +87,7 @@ public class Official {
         this.channels = channels;
     }
 
+    public List<String> getEmails() {
+        return emails;
+    }
 }

@@ -10,10 +10,10 @@ public class Result {
     @Expose
     private NormalizedInput normalizedInput;
     @SerializedName("kind")
-    @Expose
+    @Expose(serialize = false)
     private String kind;
     @SerializedName("divisions")
-    @Expose
+    @Expose(serialize = false)
     private Divisions divisions;
     @SerializedName("offices")
     @Expose

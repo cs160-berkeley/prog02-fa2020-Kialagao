@@ -52,9 +52,6 @@ class RepresentativesFragment : Fragment() {
         Toast.makeText(requireContext(), "Height: ${getScreenHeight()}", Toast.LENGTH_SHORT).show()
     }
 
-    fun hello() {
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

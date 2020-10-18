@@ -21,8 +21,6 @@ class MasterActivityViewModel : ViewModel() {
         RepresentativesRepo()
     }
 
-
-    var representativesMutableLiveData = representativesRepo.mutableLiveData
     var geolocationMutableLiveData  = geolocationRepo.mutableLiveData
     var inputAddress = ""
 
@@ -31,12 +29,6 @@ class MasterActivityViewModel : ViewModel() {
         val formattedQuery = "${lat},${lng}"
 
         geolocationRepo.getResults(formattedQuery, key)
-    }
-
-    fun fetchRepresentatives(address : String, key : String) {
-        val formattedAddress = address.replace("\\s".toRegex(), "+")
-        inputAddress = address
-        representativesRepo.getResult(formattedAddress, key)
     }
 
     fun getRandomCoordinate() : Pair<Double, Double> {
@@ -60,6 +52,10 @@ class MasterActivityViewModel : ViewModel() {
     private fun withinTheBorders(lat : Double, lng: Double) : Boolean{
         return (MainBoundaries.southernMost <= lat && lat <= MainBoundaries.northernMost)
                 && (MainBoundaries.westernMost <= lng && lng <= MainBoundaries.easternMost)
+    }
+
+    fun updateLocation(address: String) {
+        geolocationRepo.updateLocation(address)
     }
 }
 

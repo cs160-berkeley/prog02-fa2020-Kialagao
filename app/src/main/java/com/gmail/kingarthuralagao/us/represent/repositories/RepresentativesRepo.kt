@@ -19,10 +19,11 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
-const val role1 : String = "legislatorLowerBody"
-const val role2 : String = "legislatorUpperBody"
+//const val role1 : String = "legislatorLowerBody"
+//const val role2 : String = "legislatorUpperBody"
 
 class RepresentativesRepo {
+    /*
     private val TAG = javaClass.simpleName
     val mutableLiveData = MutableLiveData<Resource<MutableList<MutableMap<String, String>>>>()
     val representativesList = mutableListOf<MutableMap<String, String>>()
@@ -34,8 +35,9 @@ class RepresentativesRepo {
 
         callService(address, key)
         return mutableLiveData
-    }
+    }*/
 
+    /*
     private fun callService(address : String, key : String) {
 
         /*
@@ -106,9 +108,9 @@ class RepresentativesRepo {
     fun buildAddress(input : NormalizedInput) : String {
         return "${input.line1} ${input.city}, ${input.state} ${input.zip}"
     }
-}
+}*/
 
-
+    /*
 object RepresentativesRetrofitClient {
     private val BASE_URL = "https://civicinfo.googleapis.com/civicinfo/v2/"
     val gson = GsonBuilder().setLenient().create()
@@ -120,7 +122,7 @@ object RepresentativesRetrofitClient {
             .build()
         retrofit.create(IRepresentatives::class.java)
     }
-}
+}*/
 
 /*
 class DownloadTask : AsyncTask<String, Void, String>() {
@@ -160,5 +162,5 @@ class DownloadTask : AsyncTask<String, Void, String>() {
         } catch (e : Exception) {
             Log.i("Error", e.message.toString())
         }
-    }
-}*/
+    }*/
+}

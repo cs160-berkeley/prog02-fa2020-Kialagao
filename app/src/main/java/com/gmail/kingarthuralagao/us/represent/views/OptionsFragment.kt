@@ -92,17 +92,18 @@ class OptionsFragment : Fragment(), View.OnClickListener {
     fun manageButtons(resourceID: Int) {
         setClickable(true)
 
-        if (activeButton == null) {
+        if (activeButton != null && activeButton!!.id == binding.currentLocationBtn.id) {
             binding.loadingDots.stopAnimation()
             binding.loadingDots.visibility = View.INVISIBLE
             binding.randomizeLocationBtn.visibility = View.VISIBLE
         } else {
-            activeButton!!.doneLoadingAnimation(R.color.colorAccent,
-                BitmapFactory.decodeResource(resources, resourceID))
+            binding.loadingDots.stopAnimation()
+            binding.loadingDots.visibility = View.INVISIBLE
+            binding.randomizeLocationBtn.visibility = View.VISIBLE
         }
     }
 
-    fun setClickable(boolean : Boolean) {
+    private fun setClickable(boolean : Boolean) {
         when (activeButton) {
             null -> {
                 binding.searchLocationBtn.isClickable = boolean

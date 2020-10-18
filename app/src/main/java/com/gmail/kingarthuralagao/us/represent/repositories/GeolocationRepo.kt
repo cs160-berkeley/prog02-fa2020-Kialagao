@@ -16,10 +16,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 class GeolocationRepo {
     private val TAG = javaClass.simpleName
     var resultList: MutableList<GeolocationResult> = mutableListOf()
-    val mutableLiveData = MutableLiveData<Resource<List<GeolocationResult>>>()
-    lateinit var resource: Resource<List<GeolocationResult>>
+    val mutableLiveData = MutableLiveData<Resource<String>>()
+    lateinit var resource: Resource<String>
 
-    fun getResults(formattedQuery: String, key: String) : MutableLiveData<Resource<List<GeolocationResult>>> {
+    fun getResults(formattedQuery: String, key: String) : MutableLiveData<Resource<String>> {
         callService(formattedQuery, key)
 
         return mutableLiveData
@@ -33,6 +33,7 @@ class GeolocationRepo {
             override fun onResponse(call: Call<Results>, response: Response<Results>) {
                 if (!response.isSuccessful) { //Error
                     Log.i(TAG, "Code: ${response.code()}")
+                    resource = Resource("", response.message())
                     return
                 }
 
@@ -41,17 +42,31 @@ class GeolocationRepo {
                     resultList.add(result)
                     Log.i(TAG, result.formattedAddress)
                 }
-                resource = Resource(resultList, "")
+
+                var resultAddress = ""
+                for (address in resultList) {
+                    if (!address.formattedAddress.contains("Unnamed") && address.formattedAddress.contains("USA")) {
+                        resultAddress = address.formattedAddress
+                        break
+                    }
+                }
+
+                resource = Resource(resultAddress, "Location not in the U.S.")
                 mutableLiveData.value = resource
             }
 
             override fun onFailure(call: Call<Results>, t: Throwable) {
                 Log.i("Error", t.message!!)
                 resultList.clear()
-                resource = Resource(resultList, t.message)
+                resource = Resource("", t.message)
                 mutableLiveData.value = resource
             }
         })
+    }
+
+    fun updateLocation(address: String) {
+        resource = Resource(address, "")
+        mutableLiveData.value = resource
     }
 }
 
