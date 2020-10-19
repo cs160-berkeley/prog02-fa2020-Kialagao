@@ -96,7 +96,7 @@ class ElectionInformationFragment : Fragment() {
                 try {
                     val pollingLocationsFragment = pagerAdapter?.getFragment(1) as PollingLocationsFragment
                 } catch (e : Exception) {
-                    if (viewModel.voterInfoMutableLiveData.value?.data != null) {
+                    if (viewModel.voterInfoMutableLiveData.value?.data == null) {
                         viewModel.fetchVoterInformation(
                             address,
                             resources.getString(R.string.api_key)
@@ -105,9 +105,9 @@ class ElectionInformationFragment : Fragment() {
                 }
 
                 try {
-                    val dropOffLocationsFragment = pagerAdapter?.getFragment(2) as DropOffLocationsFragment
+                    pagerAdapter?.getFragment(2) as DropOffLocationsFragment
                 } catch (e: Exception) {
-                    if (viewModel.voterInfoMutableLiveData.value?.data != null) {
+                    if (viewModel.voterInfoMutableLiveData.value?.data == null) {
                         viewModel.fetchVoterInformation(address, resources.getString(R.string.api_key))
                     }
                 }

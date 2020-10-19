@@ -12,7 +12,7 @@
 
         <ImageView
             android:layout_width="24dp"
-            android:layout_height="match_parent"
+            android:layout_height="24dp"
             android:src="@drawable/ic_location_gray_18dp"/>
 
         <TextView
@@ -34,7 +34,7 @@
 
         <ImageView
             android:layout_width="24dp"
-            android:layout_height="match_parent"
+            android:layout_height="24dp"
             android:src="@drawable/ic_address_on_gray_18dp"/>
 
         <TextView
@@ -55,7 +55,7 @@
 
         <ImageView
             android:layout_width="24dp"
-            android:layout_height="match_parent"
+            android:layout_height="24dp"
             android:layout_gravity="top"
             android:src="@drawable/ic_time_gray_18dp"/>
 
@@ -72,7 +72,7 @@
             app:trimCollapsedText="...show more"
             app:trimExpandedText=" show less"
             app:trimMode="trimModeLength"
-            app:trimLength="50"/>
+            app:trimLength="80"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -13,10 +13,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val voterInfoRepo = ElectionInformationRepo()
-        voterInfoRepo.getVoterInfo("601 Biscayne Blvd, Miami, FL 33132", resources.getString(R.string.api_key))
-        /*
         var intent = Intent(this, MasterActivity::class.java)
-        startActivity(intent)*/
+        startActivity(intent)
     }
 }

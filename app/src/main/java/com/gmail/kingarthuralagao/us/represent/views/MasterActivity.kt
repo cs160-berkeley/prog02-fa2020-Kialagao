@@ -12,6 +12,8 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -155,11 +157,25 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
     private fun fetchElectionInformation(address : String) {
 
         if (optionsFragment.isVisible) {
-            optionsFragment.manageButtons(R.drawable.ic_done_white_48dp)
+            optionsFragment.manageButtons(0)
             if (optionsFragment.activeButton?.id == optionsFragment.binding.currentLocationBtn.id) {
+                Handler(Looper.getMainLooper())
+                Handler(Looper.getMainLooper()).postDelayed({optionsFragment.binding.currentLocationBtn.doneLoadingAnimation(R.color.colorAccent,
+                    BitmapFactory.decodeResource(resources, R.drawable.ic_done_white_48dp)) }, 1000)
+                Handler(Looper.getMainLooper()).postDelayed({ optionsFragment.binding.currentLocationBtn.revertAnimation() }, 2500)
+                Handler(Looper.getMainLooper()).postDelayed({switchFragments()}, 3000)
+                /*
+                Handler().run {
+                    postDelayed({
+                        optionsFragment.binding.currentLocationBtn.doneLoadingAnimation(R.color.colorAccent, BitmapFactory.decodeResource(resources, R.drawable.ic_done_white_48dp))
+                    }, 1000)
+                    postDelayed({ optionsFragment.binding.currentLocationBtn.revertAnimation() }, 2000)
+                    postDelayed({switchFragments()}, 3000)
+                }*/
+                /*
                 object : CountDownTimer(2000, 1000) {
                     override fun onTick(millisUntilFinished: Long) {
-                        if (millisUntilFinished <= 1000L) {
+                        if (millisUntilFinished <= 1500L) {
 
                             manageButtonAnimation()
                         }
@@ -168,7 +184,7 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
                     override fun onFinish() {
                         switchFragments()
                     }
-                }.start()
+                }.start()*/
             } else {
                 switchFragments()
             }
