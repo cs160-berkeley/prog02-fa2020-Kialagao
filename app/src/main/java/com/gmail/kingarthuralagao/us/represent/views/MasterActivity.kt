@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -36,7 +37,7 @@ import kotlin.properties.Delegates
 const val AUTOCOMPLETE_REQUEST_CODE = 2
 const val PERMISSION_REQUEST_CODE = 1
 
-class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener, Representatives2Fragment.IRepresentativesFragmentListener,
+class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener, RepresentativesFragment.IRepresentativesFragmentListener,
     ElectionInformationFragment.IIconClickListener, RepresentativeInfoDialog.IOnLinkClickListener {
     private val optionsFragment : OptionsFragment by lazy {
         OptionsFragment()
@@ -55,6 +56,7 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
         if (optionsFragment.isVisible) {
             return
         }
+        electionInformationFragment.cleanAdapter()
         super.onBackPressed()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,6 +87,8 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
                     locationManager.removeUpdates(this)
                 }
             }
+
+            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
         }
 
         masterActivityViewModel.geolocationMutableLiveData.observe(this, geolocationObserver)
@@ -149,13 +153,13 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
     }
 
     private fun fetchElectionInformation(address : String) {
-        optionsFragment.manageButtons(R.drawable.ic_done_white_48dp)
 
         if (optionsFragment.isVisible) {
+            optionsFragment.manageButtons(R.drawable.ic_done_white_48dp)
             if (optionsFragment.activeButton?.id == optionsFragment.binding.currentLocationBtn.id) {
-                object : CountDownTimer(2500, 1000) {
+                object : CountDownTimer(2000, 1000) {
                     override fun onTick(millisUntilFinished: Long) {
-                        if (millisUntilFinished <= 1500L) {
+                        if (millisUntilFinished <= 1000L) {
 
                             manageButtonAnimation()
                         }
@@ -213,16 +217,6 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
                         val place = Autocomplete.getPlaceFromIntent(data)
                         Log.i(TAG, place.address.toString())
                         masterActivityViewModel.updateLocation(place.address.toString())
-                        /*
-                        if (optionsFragment.isVisible) {
-                            //optionsFragment.binding.searchLocationBtn.startAnimation()
-                            optionsFragment.setClickable(false)
-                            switchFragments()
-                        } else {
-                            electionInformationFragment.updateVoterInfo(place.address.toString())
-                        }*/
-
-                        //masterActivityViewModel.fetchRepresentatives(place.address.toString(), resources.getString(R.string.api_key))
                     }
                 }
                 AutocompleteActivity.RESULT_ERROR -> {
@@ -232,6 +226,7 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
                     }
                 }
                 Activity.RESULT_CANCELED -> {
+                    optionsFragment.manageButtons(0)
                     // The user canceled the operation.
                 }
             }
@@ -279,16 +274,9 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
     override fun onLinkClick(tag: String, link: String) {
         when (tag) {
             resources.getString(R.string.website) -> {
-                /*
                 val browserIntent = Intent(
-                    Intent.ACTION_VIEW, Uri.parse(
-                        masterActivityViewModel.representativesMutableLiveData.value?.data?.get(
-                            representativePosition
-                        )
-                            ?.get("website")
-                    )
-                )
-                startActivity(browserIntent)*/
+                    Intent.ACTION_VIEW, Uri.parse(link))
+                startActivity(browserIntent)
             }
 
             resources.getString(R.string.phone) -> {
@@ -327,6 +315,17 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
                     Uri.parse("https://youtube.com/${link}")
                 }
                 startActivity(intent)
+            }
+
+            else -> {
+                val emailIntent = Intent(Intent.ACTION_SEND)
+
+                emailIntent.type = "plain/text";
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(link))
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject")
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "Text")
+
+                startActivity(Intent.createChooser(emailIntent, "Send mail..."))
             }
         }
     }

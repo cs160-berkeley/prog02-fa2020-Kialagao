@@ -10,6 +10,7 @@ import com.gmail.kingarthuralagao.us.represent.services.IRepresentatives
 import com.gmail.kingarthuralagao.us.represent.services.IVoterInfo
 import com.gmail.kingarthuralagao.us.represent.viewmodels.Resource
 import com.google.gson.GsonBuilder
+import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -106,8 +107,12 @@ class ElectionInformationRepo {
                         representativesResource = Resource(representativesList, "")
                         representativesMutableLiveData.value = representativesResource
                     } else {
-                        representativesResource = Resource(representativesList, "No Information Available")
-                        representativesMutableLiveData.value = representativesResource
+                        val BASE_URL = "https://civicinfo.googleapis.com/civicinfo/v2/"
+                        val downloadTask = DownloadTask()
+                        val formattedUrl = "${BASE_URL}representatives?address=${address}&roles=${role1}&roles=${role2}&key=${key}"
+                        downloadTask.execute(formattedUrl)
+                        //representativesResource = Resource(representativesList, "No Information Available")
+                        //representativesMutableLiveData.value = representativesResource
                     }
                     Log.i(TAG, "onCallResponse")
                 }
@@ -142,9 +147,13 @@ class ElectionInformationRepo {
                             if (channel.type == "Twitter") { m["twitter"] = channel.id }
                             if (channel.type == "YouTube") { m["youtube"] = channel.id }
                         }
-                        if (!official.emails.isNullOrEmpty()) {
-                            throw RuntimeException("Email exists")
+                        m["email"] = if (official.emails.isNullOrEmpty()) {
+                            ""
+                        } else {
+                            Log.d(TAG, official.emails[0].toString())
+                            official.emails[0].toString()
                         }
+
                         representativesList.add(m)
                     } catch (e : Exception) {
 
@@ -158,8 +167,7 @@ class ElectionInformationRepo {
         return "${input.line1} ${input.city}, ${input.state} ${input.zip}"
     }
 
-    /*
-    class DownloadTask : AsyncTask<String, Void, String>() {
+    inner class DownloadTask : AsyncTask<String, Void, String>() {
         override fun doInBackground(vararg params: String): String {
             var result = ""
             val url: URL
@@ -190,15 +198,62 @@ class ElectionInformationRepo {
             try {
                 val jsonObject = JSONObject(result)
 
-                val jsonArray = jsonObject.getJSONArray("offices")
+                val offices = jsonObject.getJSONArray("offices")
                 val officials = jsonObject.getJSONArray("officials")
-                val jsonObjects = JSONObject(jsonArray.get(0).toString())
+                val jsonObjects = JSONObject(offices.get(0).toString())
                 Log.i("RepresentativeRepo", jsonObjects.getString("name"))
+
+                representativesList.clear()
+                for (officeIndex in 0 until offices.length()) {
+                    val office = JSONObject(offices[officeIndex].toString())
+                    if (office.getString("name") == "U.S. Senator" || office.getString("name") == "U.S. Representative") {
+                        val officialIndices = office.getJSONArray("officialIndices")
+
+                        for (officialIndex in 0 until officialIndices.length()) {
+                            try {
+                                val m = mutableMapOf<String, String>()
+                                m["office"] = office.getString("name")
+                                val official = officials.getJSONObject(officialIndex)
+                                m["name"] = official.getString("name")
+                                m["party"] = official.getString("party")
+                                m["photoUrl"] = official.getString("photoUrl") ?: ""
+
+                                val phoneUrls = official.getJSONArray("phones")
+                                m["phone"] = phoneUrls.get(0).toString()
+
+                                val websiteUrls = official.getJSONArray("urls")
+                                m["website"] = websiteUrls[0].toString()
+
+                                val channels = official.getJSONArray("channels")
+                                for (channelIndex in 0 until channels.length()) {
+                                    val channel = JSONObject(channels[channelIndex].toString())
+                                    if (channel.getString("type") == "Twitter") { m["twitter"] = channel.getString("id") }
+                                    if (channel.getString("type") == "YouTube") { m["youtube"] = channel.getString("id") }
+                                }
+
+                                val emails = official.getJSONArray("emails")
+                                m["email"] = if (emails == null || emails.length() == 0) {
+                                    ""
+                                } else {
+                                    //Log.d(TAG, official.emails[0].toString())
+                                    emails[0].toString()
+                                }
+                                Log.d(javaClass.simpleName, m.toString())
+                                representativesList.add(m)
+                            } catch (e : Exception) {
+                                Log.d(javaClass.simpleName, e.message.toString())
+
+                            }
+                        }
+                    }
+                }
+                representativesResource = Resource(representativesList, "")
+                representativesMutableLiveData.value = representativesResource
             } catch (e: Exception) {
                 Log.i("Error", e.message.toString())
             }
         }
-    }*/
+    }
 }
 
 

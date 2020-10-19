@@ -25,4 +25,5 @@
     <string name="polling_locations">Polling Locations</string>
     <string name="drop_off_locations">Drop-Off Locations</string>
     <string name="address">Address</string>
+    <string name="email">Email</string>
 </resources>

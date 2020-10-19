@@ -1,7 +1,6 @@
 package com.gmail.kingarthuralagao.us.represent.views
 
 import android.content.Context
-import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -9,81 +8,86 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.gmail.kingarthuralagao.us.represent.R
 import com.gmail.kingarthuralagao.us.represent.adapters.RepresentativesRecyclerViewAdapter
 import com.gmail.kingarthuralagao.us.represent.adapters.getScreenHeight
 import com.gmail.kingarthuralagao.us.represent.databinding.FragmentRepresentativesBinding
 import es.dmoral.toasty.Toasty
 
+
+// TODO: Rename parameter arguments, choose names that match
+// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+private const val ADDRESS = "address"
+private const val ADAPTER = "adapter"
+
+/**
+ * A simple [Fragment] subclass.
+ * Use the [Representatives2Fragment.newInstance] factory method to
+ * create an instance of this fragment.
+ */
 class RepresentativesFragment : Fragment() {
 
-    interface ClickListener {
+    interface IClickListener {
         fun onClick(view: View?, position: Int)
     }
 
+    interface IRepresentativesFragmentListener {
+        fun onCardViewItemClick(representativeMap: MutableMap<String, String>)
+    }
+
     companion object {
-        fun newInstance(viewAdapter: RepresentativesRecyclerViewAdapter, address: String?): RepresentativesFragment {
-            val fragmentDemo = RepresentativesFragment()
-            val args = Bundle()
-            args.putSerializable("adapter", viewAdapter)
-            args.putString("address", address)
-            fragmentDemo.arguments = args
-            return fragmentDemo
-        }
+        @JvmStatic
+        fun newInstance(address: String) =
+            RepresentativesFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ADDRESS, address)
+                }
+            }
     }
 
     private val TAG = javaClass.simpleName
-    lateinit var representativesBinding: FragmentRepresentativesBinding
-    private lateinit var viewManager: LinearLayoutManager
-    lateinit var viewAdapter : RepresentativesRecyclerViewAdapter
-    private lateinit var itemDecorator : VerticalSpaceItemDecoration
     private var iRepresentativesFragmentListener: IRepresentativesFragmentListener? = null
-    private lateinit var address : String
+    private var address: String = ""
+    private var viewAdapter = RepresentativesRecyclerViewAdapter(mutableListOf(mutableMapOf()))
+    private lateinit var representativesBinding: FragmentRepresentativesBinding
+    private lateinit var viewManager: LinearLayoutManager
+    private lateinit var itemDecorator : VerticalSpaceItemDecoration
+    private lateinit var representativesList : MutableList<MutableMap<String, String>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        arguments?.let {
+            address = it.getString(ADDRESS).toString()
+        }
 
+        val space = (getScreenHeight() - 370 - (3 * (getScreenHeight() / 5)) - (16 * 6)) / 6
         representativesBinding = FragmentRepresentativesBinding.inflate(layoutInflater)
         viewManager = LinearLayoutManager(requireContext())
-        viewAdapter = requireArguments().getSerializable("adapter") as RepresentativesRecyclerViewAdapter
-        address = requireArguments().getString("address") as String
-        itemDecorator = VerticalSpaceItemDecoration(96)
-
-        Toast.makeText(requireContext(), "Height: ${getScreenHeight()}", Toast.LENGTH_SHORT).show()
+        itemDecorator = VerticalSpaceItemDecoration(space)
     }
 
-
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.i(TAG, "onCreateView")
-        representativesBinding.representativesRv.apply {
+        // Inflate the layout for this fragment
+        this.representativesBinding.representativesRv.apply {
             addItemDecoration(itemDecorator)
             layoutManager = viewManager
             adapter = viewAdapter
         }
-        representativesBinding.addressTv.text = address
+        representativesBinding.representativesRv.visibility = View.INVISIBLE
+        Log.i(TAG, "onCreateView")
+
         return representativesBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        representativesBinding.myLocationBtn.setOnClickListener {iRepresentativesFragmentListener?.onIconClick(
-            representativesBinding.myLocationBtn.tag.toString()
-        )}
-        representativesBinding.searchBtn.setOnClickListener {iRepresentativesFragmentListener?.onIconClick(
-            representativesBinding.searchBtn.tag.toString()
-        )}
-
-        representativesBinding.randomLocationBtn.setOnClickListener {iRepresentativesFragmentListener?.onIconClick(
-            representativesBinding.randomLocationBtn.tag.toString())}
-
         representativesBinding.representativesRv.addOnItemTouchListener(
-            RecyclerTouchListener(requireContext(), object : ClickListener {
+            RecyclerTouchListener(requireContext(), object : IClickListener {
                 override fun onClick(view: View?, position: Int) {
-                    iRepresentativesFragmentListener?.onCardViewItemClick(position)
+                    val representative = representativesList[position]
+                    iRepresentativesFragmentListener?.onCardViewItemClick(representative!!)
                 }
             })
         )
@@ -103,47 +107,39 @@ class RepresentativesFragment : Fragment() {
         iRepresentativesFragmentListener = null
     }
 
-    interface IRepresentativesFragmentListener {
-        fun onCardViewItemClick(position: Int)
-        fun onIconClick(tag: String)
-    }
-
-    fun showErrorMsg(s : String) {
+    private fun showErrorMsg(s: String) {
         Toasty.error(requireContext(), s, Toast.LENGTH_LONG, true).show()
     }
-}
 
-class VerticalSpaceItemDecoration(private val verticalSpaceHeight: Int) : RecyclerView.ItemDecoration() {
-    override fun getItemOffsets(
-        outRect: Rect,
-        view: View,
-        parent: RecyclerView,
-        state: RecyclerView.State
-    ) {
-        super.getItemOffsets(outRect, view, parent, state)
-        outRect.bottom = verticalSpaceHeight;
+    fun updateView(data: MutableList<MutableMap<String, String>>) {
+        representativesList = data
+        viewAdapter.setData(data)
+        representativesBinding.representativesRv.visibility = View.VISIBLE
     }
-}
 
-internal class RecyclerTouchListener(
-    context: Context?,
-    private val clickListener: RepresentativesFragment.ClickListener?
-) :
-    RecyclerView.OnItemTouchListener {
-    private val gestureDetector: GestureDetector =
-        GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onSingleTapUp(e: MotionEvent): Boolean {
-                return true
+    internal class RecyclerTouchListener(
+        context: Context?,
+        private val clickListener: IClickListener
+    ) :
+        RecyclerView.OnItemTouchListener {
+        private val gestureDetector: GestureDetector =
+            GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+                override fun onSingleTapUp(e: MotionEvent): Boolean {
+                    return true
+                }
+            })
+
+        override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+            val child = rv.findChildViewUnder(e.x, e.y)
+            if (child != null && clickListener != null && gestureDetector.onTouchEvent(e)) {
+                clickListener.onClick(child, rv.getChildAdapterPosition(child))
             }
-        })
-
-    override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-        val child = rv.findChildViewUnder(e.x, e.y)
-        if (child != null && clickListener != null && gestureDetector.onTouchEvent(e)) {
-            clickListener.onClick(child, rv.getChildAdapterPosition(child))
+            return false
         }
-        return false
+
+        override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
+        override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
     }
-    override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
-    override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
 }
+
+

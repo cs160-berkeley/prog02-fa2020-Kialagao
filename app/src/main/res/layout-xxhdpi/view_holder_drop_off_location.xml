@@ -56,6 +56,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="match_parent"
+            android:layout_gravity="top"
             android:src="@drawable/ic_time_gray_18dp"/>
 
         <com.borjabravo.readmoretextview.ReadMoreTextView
@@ -68,8 +69,8 @@
             android:text="No available time"
             android:textSize="14sp"
             android:textColor="@android:color/black"
-            app:trimCollapsedText="show more"
-            app:trimExpandedText="show sess"
+            app:trimCollapsedText="...show more"
+            app:trimExpandedText=" show less"
             app:trimMode="trimModeLength"
             app:trimLength="50"/>
     </LinearLayout>

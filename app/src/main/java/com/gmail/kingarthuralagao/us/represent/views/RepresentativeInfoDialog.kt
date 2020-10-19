@@ -14,9 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.marginTop
 import androidx.fragment.app.DialogFragment
-import com.bumptech.glide.Glide
 import com.gmail.kingarthuralagao.us.represent.R
 import com.gmail.kingarthuralagao.us.represent.adapters.getScreenHeight
 import com.gmail.kingarthuralagao.us.represent.adapters.getScreenWidth
@@ -26,9 +24,9 @@ import com.squareup.picasso.Picasso
 private var linkClickListener : RepresentativeInfoDialog.IOnLinkClickListener? = null
 class RepresentativeInfoDialog : DialogFragment() {
 
-    private lateinit var binding: DialogCandidateDetailedViewBinding
-    private lateinit var representativeInfo : HashMap<String, String>
-    private lateinit var representativeDetails : RepresentativeDetails
+    interface IOnLinkClickListener {
+        fun onLinkClick(tag : String, link : String)
+    }
 
     companion object {
         fun newInstance(value: HashMap<String, String>): RepresentativeInfoDialog {
@@ -39,6 +37,11 @@ class RepresentativeInfoDialog : DialogFragment() {
             return representativeInfoDialog
         }
     }
+
+    private val TAG = javaClass.simpleName
+    private lateinit var binding: DialogCandidateDetailedViewBinding
+    private lateinit var representativeInfo : HashMap<String, String>
+    private lateinit var representativeDetails : RepresentativeDetails
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +89,7 @@ class RepresentativeInfoDialog : DialogFragment() {
 
         binding.contentCandidate.detailedPartyTv.text = representativeDetails.party
         if (representativeDetails.youtube.isEmpty()) {
-            (binding.contentCandidate.root as ViewGroup).removeViewAt(5)
+            (binding.contentCandidate.root as ViewGroup).removeViewAt(6)
         } else {
             binding.contentCandidate.youtubeTv.text = representativeDetails.youtube
             binding.contentCandidate.youtubeTv.highlightColor = Color.TRANSPARENT
@@ -94,11 +97,20 @@ class RepresentativeInfoDialog : DialogFragment() {
         }
 
         if (representativeDetails.twitter.isEmpty()) {
-            (binding.contentCandidate.root as ViewGroup).removeViewAt(4)
+            (binding.contentCandidate.root as ViewGroup).removeViewAt(5)
         } else {
             binding.contentCandidate.twitterTv.text = representativeDetails.twitter
             binding.contentCandidate.twitterTv.highlightColor = Color.TRANSPARENT
             binding.contentCandidate.twitterTv.movementMethod = LinkMovementMethod.getInstance()
+        }
+
+        if (representativeDetails.email.isEmpty()) {
+            (binding.contentCandidate.root as ViewGroup).removeViewAt(4)
+        } else {
+            Log.d(TAG, representativeDetails.email.toString())
+            binding.contentCandidate.emailTv.text = representativeDetails.email
+            binding.contentCandidate.emailTv.highlightColor = Color.TRANSPARENT
+            binding.contentCandidate.emailTv.movementMethod = LinkMovementMethod.getInstance()
         }
 
         if (representativeDetails.photo.isEmpty()) {
@@ -156,7 +168,7 @@ class RepresentativeInfoDialog : DialogFragment() {
         }
     }
 
-    class RepresentativeDetails(details : HashMap<String, String>) {
+    inner class RepresentativeDetails(details : HashMap<String, String>) {
         var name : String = ""
         var party : String = ""
         var office : String = ""
@@ -164,14 +176,24 @@ class RepresentativeInfoDialog : DialogFragment() {
         var website : SpannableString
         var twitter : SpannableString
         var youtube : SpannableString
+        var email : SpannableString
         var photo = ""
+        var rawWebsite = ""
 
         init {
             name = details["name"]!!
             party = details["party"]!!
             office = details["office"]!!
             phone = createClickableSpan(details["phone"]!!)
+            rawWebsite = details["website"]!!
             website = createClickableSpan(websiteCleaner(details["website"]!!))
+
+            email = if (details["email"].isNullOrEmpty()) {
+                SpannableString("")
+            } else {
+                createClickableSpan(details["email"]!!)
+            }
+
             twitter = if (details["twitter"].isNullOrEmpty()) {
                 SpannableString("")
             } else {
@@ -200,7 +222,17 @@ class RepresentativeInfoDialog : DialogFragment() {
         private fun createClickableSpan(s : String) : SpannableString{
             val clickableSpan = object : ClickableSpan() {
                 override fun onClick(textView: View) {
-                    linkClickListener?.onLinkClick(textView.tag.toString(), (textView as TextView).text.toString())
+                    if (textView.id == binding.contentCandidate.websiteTv.id) {
+                        linkClickListener?.onLinkClick(
+                            textView.tag.toString(),
+                            rawWebsite
+                        )
+                    } else {
+                        linkClickListener?.onLinkClick(
+                            textView.tag.toString(),
+                            (textView as TextView).text.toString()
+                        )
+                    }
                 }
             }
             val startIndex = 0
@@ -219,8 +251,5 @@ class RepresentativeInfoDialog : DialogFragment() {
             spannableString.setSpan(fcs, startIndex, endIndex, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
             return spannableString
         }
-    }
-    interface IOnLinkClickListener {
-        fun onLinkClick(tag : String, link : String)
     }
 }

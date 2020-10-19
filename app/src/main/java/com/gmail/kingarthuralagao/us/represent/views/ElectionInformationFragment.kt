@@ -95,14 +95,17 @@ class ElectionInformationFragment : Fragment() {
 
                 try {
                     val pollingLocationsFragment = pagerAdapter?.getFragment(1) as PollingLocationsFragment
-                    Toast.makeText(binding.tabLayout.context, pagerAdapter!!.getFragment(tab.position).javaClass.toString(), Toast.LENGTH_SHORT).show()
                 } catch (e : Exception) {
-                    viewModel.fetchVoterInformation(address, resources.getString(R.string.api_key))
+                    if (viewModel.voterInfoMutableLiveData.value?.data != null) {
+                        viewModel.fetchVoterInformation(
+                            address,
+                            resources.getString(R.string.api_key)
+                        )
+                    }
                 }
 
                 try {
                     val dropOffLocationsFragment = pagerAdapter?.getFragment(2) as DropOffLocationsFragment
-                    Toast.makeText(binding.tabLayout.context, pagerAdapter!!.getFragment(tab.position).javaClass.toString(), Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
                     if (viewModel.voterInfoMutableLiveData.value?.data != null) {
                         viewModel.fetchVoterInformation(address, resources.getString(R.string.api_key))
@@ -150,9 +153,13 @@ class ElectionInformationFragment : Fragment() {
         }.attach()
     }
 
-    fun updateVoterInfo(address: String) {
-        binding.addressTv.text = address
+    fun updateVoterInfo(a: String) {
+        address = a
         getElectionInformation(address)
+    }
+
+    fun cleanAdapter() {
+        pagerAdapter = null
     }
 
     private fun getElectionInformation(address: String) {
@@ -168,8 +175,9 @@ class ElectionInformationFragment : Fragment() {
                 Log.i(TAG, i["name"]!!)
             }
 
-            val representativeFragment = pagerAdapter?.getFragment(0) as Representatives2Fragment
+            val representativeFragment = pagerAdapter?.getFragment(0) as RepresentativesFragment
             representativeFragment.updateView(it.data!!)
+            binding.addressTv.text = address
         } else {
             showErrorMsg(it.message!!)
         }
@@ -208,7 +216,7 @@ class ElectionInformationFragment : Fragment() {
         override fun createFragment(position: Int): Fragment {
             return when(position) {
                 0 -> {
-                    val representativesFragment = Representatives2Fragment.newInstance(address)
+                    val representativesFragment = RepresentativesFragment.newInstance(address)
                     addFragment(position, representativesFragment)
                     representativesFragment
                 }
@@ -252,5 +260,18 @@ class ElectionInformationFragment : Fragment() {
         fun getFragment(position: Int) : Fragment{
             return arrayList[position]
         }
+    }
+}
+
+
+class VerticalSpaceItemDecoration(private val verticalSpaceHeight: Int) : RecyclerView.ItemDecoration() {
+    override fun getItemOffsets(
+        outRect: Rect,
+        view: View,
+        parent: RecyclerView,
+        state: RecyclerView.State
+    ) {
+        super.getItemOffsets(outRect, view, parent, state)
+        outRect.bottom = verticalSpaceHeight;
     }
 }

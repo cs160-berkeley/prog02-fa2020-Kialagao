@@ -12,10 +12,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.borjabravo.readmoretextview.ReadMoreTextView
 import com.gmail.kingarthuralagao.us.represent.R
 import com.gmail.kingarthuralagao.us.represent.models.voterinfo.Address
 import com.gmail.kingarthuralagao.us.represent.models.voterinfo.DropOffLocation
 import com.gmail.kingarthuralagao.us.represent.models.voterinfo.PollingLocation
+import com.gmail.kingarthuralagao.us.represent.views.ExpandableTextView
 import com.google.android.material.card.MaterialCardView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -33,12 +35,12 @@ class DropOffLocationsRvAdapter(private var myDataSet: List<DropOffLocation>)
     class PollingLocationViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var locationTv: TextView = view.findViewById(R.id.locationTv)
         var addressTv: TextView = view.findViewById(R.id.addressTv)
-        var pollingHrsTv : TextView = view.findViewById(R.id.pollingHrsTv)
+        var pollingHrsTv : ReadMoreTextView = view.findViewById(R.id.pollingHrsTv)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val v = LayoutInflater.from(parent.context)
-            .inflate(R.layout.view_holder_polling_location, parent, false)
+            .inflate(R.layout.view_holder_drop_off_location, parent, false)
         Log.i(TAG, "onBindViewHolder")
 
         return PollingLocationViewHolder(v)
@@ -48,7 +50,7 @@ class DropOffLocationsRvAdapter(private var myDataSet: List<DropOffLocation>)
         val h = holder as PollingLocationViewHolder
         h.locationTv.text = myDataSet[position].address?.locationName ?: "Location name not available"
         h.addressTv.text = buildAddress(myDataSet[position]?.address)
-        h.pollingHrsTv.text = myDataSet[position].pollingHours ?: "Polling hours not available"
+        h.pollingHrsTv.text = "${myDataSet[position].pollingHours} "
     }
 
     override fun getItemCount(): Int {

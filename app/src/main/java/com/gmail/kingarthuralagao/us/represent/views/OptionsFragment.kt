@@ -3,6 +3,7 @@ package com.gmail.kingarthuralagao.us.represent.views
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.opengl.Visibility
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -93,6 +94,7 @@ class OptionsFragment : Fragment(), View.OnClickListener {
         setClickable(true)
 
         if (activeButton != null && activeButton!!.id == binding.currentLocationBtn.id) {
+            binding.currentLocationBtn.doneLoadingAnimation(R.color.colorAccent, BitmapFactory.decodeResource(resources, resourceID))
             binding.loadingDots.stopAnimation()
             binding.loadingDots.visibility = View.INVISIBLE
             binding.randomizeLocationBtn.visibility = View.VISIBLE

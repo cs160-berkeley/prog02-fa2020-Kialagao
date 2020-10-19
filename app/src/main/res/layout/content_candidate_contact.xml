@@ -89,6 +89,29 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/emailLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_email_black_32dp"/>
+
+        <TextView
+            android:id="@+id/emailTv"
+            android:tag="@string/email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:text="The Senate"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/twitterLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -133,4 +156,5 @@
             android:textSize="18sp"
             android:textColor="@android:color/white"/>
     </LinearLayout>
+
 </LinearLayout>
