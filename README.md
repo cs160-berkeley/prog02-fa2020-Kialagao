@@ -10,7 +10,7 @@ Represent! is an app that uses Google's Places API, GeoCoding API, and CIVIC API
 - Must make good use of visual elements and an intuitive, easy-to-use interaction flow
 
 ### Home Screen
-![Alt text](readme_images/homescreen.png)
+![Alt text](readme_images/home_screen.png)
 
 ### Requirements
 
@@ -18,8 +18,7 @@ Represent! is an app that uses Google's Places API, GeoCoding API, and CIVIC API
 
 ##### Interaction:
 - The user clicks the **USE CURRENT LOCATION** button on the home screen.
-- The app responds by asking for the user's permission to get their location. If the user approves, the app will
-  begun its search for the user's current location
+- The app responds by asking for the user's permission to get their location. If the user approves, the app will begin its search for the user's current location
 ![Alt text](readme_images/current_location_btn_pressed.png)
 
 - If successful, the app will proceed to find the representatives corresponding to the user's current location
@@ -36,7 +35,7 @@ Represent! is an app that uses Google's Places API, GeoCoding API, and CIVIC API
 ![Alt text](readme_images/search_box.png)
 
 - The user enters a location and clicks their desired location from the autocomplete search box.
-  The app responds by looking up the representatives for the location
+- The app responds by looking up the representatives for the location
 ![Alt text](readme_images/search_location_results.png)
 
 #### Finding Representatives using Random U.S. Locations
