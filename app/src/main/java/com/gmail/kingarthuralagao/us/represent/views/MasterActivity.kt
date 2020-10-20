@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
@@ -161,52 +162,14 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
             if (optionsFragment.activeButton?.id == optionsFragment.binding.currentLocationBtn.id) {
                 Handler(Looper.getMainLooper())
                 Handler(Looper.getMainLooper()).postDelayed({optionsFragment.binding.currentLocationBtn.doneLoadingAnimation(R.color.colorAccent,
-                    BitmapFactory.decodeResource(resources, R.drawable.ic_done_white_48dp)) }, 1000)
-                Handler(Looper.getMainLooper()).postDelayed({ optionsFragment.binding.currentLocationBtn.revertAnimation() }, 2500)
-                Handler(Looper.getMainLooper()).postDelayed({switchFragments()}, 3000)
-                /*
-                Handler().run {
-                    postDelayed({
-                        optionsFragment.binding.currentLocationBtn.doneLoadingAnimation(R.color.colorAccent, BitmapFactory.decodeResource(resources, R.drawable.ic_done_white_48dp))
-                    }, 1000)
-                    postDelayed({ optionsFragment.binding.currentLocationBtn.revertAnimation() }, 2000)
-                    postDelayed({switchFragments()}, 3000)
-                }*/
-                /*
-                object : CountDownTimer(2000, 1000) {
-                    override fun onTick(millisUntilFinished: Long) {
-                        if (millisUntilFinished <= 1500L) {
-
-                            manageButtonAnimation()
-                        }
-                    }
-
-                    override fun onFinish() {
-                        switchFragments()
-                    }
-                }.start()*/
+                    BitmapFactory.decodeResource(resources, R.drawable.ic_done_white_48dp)) }, 0)
+                Handler(Looper.getMainLooper()).postDelayed({ optionsFragment.binding.currentLocationBtn.revertAnimation() }, 1500)
+                Handler(Looper.getMainLooper()).postDelayed({switchFragments()}, 2000)
             } else {
                 switchFragments()
             }
         } else {
             electionInformationFragment.updateVoterInfo(address)
-        }
-    }
-
-    private fun manageButtonAnimation() {
-        when (optionsFragment.activeButton) {
-            optionsFragment.binding.currentLocationBtn -> {
-                optionsFragment.binding.currentLocationBtn.revertAnimation {
-                    optionsFragment.binding.currentLocationBtn.background =
-                        resources.getDrawable(
-                            R.drawable.current_location_btn,
-                            null
-                        )
-                }
-            }
-            else -> {
-
-            }
         }
     }
 
@@ -222,6 +185,9 @@ class MasterActivity : AppCompatActivity(), OptionsFragment.IButtonClickListener
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0F, locationListener
                 )
             }
+        } else {
+            optionsFragment.manageButtons(0)
+            Handler(Looper.getMainLooper()).postDelayed({ optionsFragment.binding.currentLocationBtn.revertAnimation() }, 0)
         }
     }
 

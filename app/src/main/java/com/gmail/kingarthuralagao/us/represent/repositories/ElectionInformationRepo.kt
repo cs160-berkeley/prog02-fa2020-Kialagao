@@ -10,7 +10,6 @@ import com.gmail.kingarthuralagao.us.represent.services.IRepresentatives
 import com.gmail.kingarthuralagao.us.represent.services.IVoterInfo
 import com.gmail.kingarthuralagao.us.represent.viewmodels.Resource
 import com.google.gson.GsonBuilder
-import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -18,7 +17,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.InputStreamReader
-import java.lang.RuntimeException
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -82,10 +80,6 @@ class ElectionInformationRepo {
     private fun representativesCallService(address : String, key : String) {
         Log.d(TAG, "address: $address")
 
-        /*val BASE_URL = "https://civicinfo.googleapis.com/civicinfo/v2/"
-                        val downloadTask = DownloadTask()
-                        val formattedUrl = "${BASE_URL}representatives?address=${address}&roles=${role1}&roles=${role2}&key=${key}"
-                        downloadTask.execute(formattedUrl)*/
         val apiService = RepresentativesRetrofitClient.representativesApi
 
         apiService.getResults(address, role1, role2, key).enqueue(object :
@@ -111,8 +105,6 @@ class ElectionInformationRepo {
                         val downloadTask = DownloadTask()
                         val formattedUrl = "${BASE_URL}representatives?address=${address}&roles=${role1}&roles=${role2}&key=${key}"
                         downloadTask.execute(formattedUrl)
-                        //representativesResource = Resource(representativesList, "No Information Available")
-                        //representativesMutableLiveData.value = representativesResource
                     }
                     Log.i(TAG, "onCallResponse")
                 }
@@ -238,16 +230,18 @@ class ElectionInformationRepo {
                                     //Log.d(TAG, official.emails[0].toString())
                                     emails[0].toString()
                                 }
-                                Log.d(javaClass.simpleName, m.toString())
                                 representativesList.add(m)
                             } catch (e : Exception) {
-                                Log.d(javaClass.simpleName, e.message.toString())
 
                             }
                         }
                     }
                 }
-                representativesResource = Resource(representativesList, "")
+                representativesResource = if (representativesList.isEmpty()) {
+                    Resource(representativesList, "No information available")
+                } else {
+                    Resource(representativesList, "")
+                }
                 representativesMutableLiveData.value = representativesResource
             } catch (e: Exception) {
                 Log.i("Error", e.message.toString())

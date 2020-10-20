@@ -93,16 +93,6 @@ class OptionsFragment : Fragment(), View.OnClickListener {
     fun manageButtons(resourceID: Int) {
         setClickable(true)
 
-        /*
-        if (activeButton != null && activeButton!!.id == binding.currentLocationBtn.id) {
-            //binding.currentLocationBtn.doneLoadingAnimation(R.color.colorAccent, BitmapFactory.decodeResource(resources, resourceID))
-            binding.loadingDots.visibility = View.INVISIBLE
-            binding.randomizeLocationBtn.visibility = View.VISIBLE
-        } else {
-            binding.loadingDots.stopAnimation()
-            binding.loadingDots.visibility = View.INVISIBLE
-            binding.randomizeLocationBtn.visibility = View.VISIBLE
-        }*/
         if (resourceID != 0) {
             binding.currentLocationBtn.doneLoadingAnimation(R.color.colorAccent, BitmapFactory.decodeResource(resources, resourceID))
         }
