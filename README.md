@@ -19,10 +19,10 @@ Represent! is an app that uses Google's Places API, GeoCoding API, and CIVIC API
 ##### Interaction:
 - The user clicks the **USE CURRENT LOCATION** button on the home screen.
 - The app responds by asking for the user's permission to get their location. If the user approves, the app will begin its search for the user's current location
-![Alt text](readme_images/current_location_btn_pressed.png)
+- ![Alt text](readme_images/current_location_btn_pressed.png)
 
 - If successful, the app will proceed to find the representatives corresponding to the user's current location
-![Alt text](readme_images/current_location_btn_success.png)
+![Alt text](readme_images/current_location_success.png)
 
 - If fail, the app will show a Toast error message instead.
 ![Alt text](readme_images/currentLocationFail.png)
